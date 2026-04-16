@@ -7,8 +7,7 @@ nixPkgs = [
   "php82Extensions.pdo",
   "php82Extensions.pdo_mysql",
   "php82Extensions.fileinfo",
-  "nodejs",
-  "nodejsPackages.npm"
+  "nodejs"
 ]
 
 [phases.build]
