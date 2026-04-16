@@ -6,12 +6,19 @@ nixPkgs = [
   "php82Extensions.mbstring",
   "php82Extensions.pdo",
   "php82Extensions.pdo_mysql",
-  "php82Extensions.fileinfo"
+  "php82Extensions.fileinfo",
+  "nodejs",
+  "nodejsPackages.npm"
 ]
 
 [phases.build]
 cmds = [
-  "composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd"
+  "composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd",
+  "npm install",
+  "npm run build",
+  "php artisan key:generate --force",
+  "php artisan config:cache",
+  "php artisan route:cache"
 ]
 
 [start]
