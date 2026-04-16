@@ -15,6 +15,7 @@ cmds = [
   "composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd",
   "npm install",
   "npm run build",
+  "cp .env.example .env",
   "php artisan key:generate --force",
   "php artisan config:cache",
   "php artisan route:cache"
