@@ -9,7 +9,7 @@ return [
         't', 'u', 'v', 'w', 'x', 'y', 'z', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
 
     // ✅ FIX WAJIB (JANGAN NULL)
-    'fontsDirectory' => public_path('assets/fonts'),
+    'fontsDirectory' => null, // Use GD built-in fonts
     'bgsDirectory' => public_path('assets/backgrounds'),
 
     'default' => [
