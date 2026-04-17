@@ -9,10 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Disable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        
-        // Hapus user yang nipnya mengandung @ (nip lama) 
+        // Hapus user yang nipnya mengandung @ (nip lama)
         // tapi hanya yang tidak memiliki bon_barangs terkait
         $usersToDelete = DB::table('users')
             ->where('nip', 'like', '%@%')
@@ -23,11 +20,8 @@ return new class extends Migration
                     ->whereRaw('bon_barangs.pegawai_id = users.id');
             })
             ->pluck('id');
-            
+
         DB::table('users')->whereIn('id', $usersToDelete)->delete();
-        
-        // Enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     public function down(): void
