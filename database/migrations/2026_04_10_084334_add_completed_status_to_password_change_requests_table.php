@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('password_change_requests', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending')->change();
-        });
+        // PostgreSQL doesn't support changing enum values directly
+        // Need to drop and recreate the column
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status TYPE VARCHAR(255)");
+        DB::statement("ALTER TABLE password_change_requests ADD CONSTRAINT password_change_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected', 'completed'))");
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status SET DEFAULT 'pending'");
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status SET NOT NULL");
     }
 
     /**
@@ -21,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('password_change_requests', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->change();
-        });
+        DB::statement("ALTER TABLE password_change_requests DROP CONSTRAINT password_change_requests_status_check");
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status TYPE VARCHAR(255)");
+        DB::statement("ALTER TABLE password_change_requests ADD CONSTRAINT password_change_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected'))");
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status SET DEFAULT 'pending'");
+        DB::statement("ALTER TABLE password_change_requests ALTER COLUMN status SET NOT NULL");
     }
 };
