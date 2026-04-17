@@ -16,8 +16,12 @@ class ForceHttps
      */
     public function handle(Request $request, Closure $next)
     {
-        if (env('FORCE_HTTPS', false) && !$request->secure()) {
-            return redirect()->secure($request->getRequestUri());
+        if (env('FORCE_HTTPS', false)) {
+            $request->setTrustedProxies([$request->ip()], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
+
+            if (!$request->secure() && $request->header('X-Forwarded-Proto') !== 'https') {
+                return redirect()->secure($request->getRequestUri());
+            }
         }
 
         return $next($request);
