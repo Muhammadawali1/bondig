@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'sanitize' => \App\Http\Middleware\SanitizeInput::class,
             'rate.limit' => \App\Http\Middleware\RateLimitProtection::class,
         ]);
+
+        $middleware->web(\App\Http\Middleware\ForceHttps::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
