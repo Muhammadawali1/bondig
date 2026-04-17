@@ -148,7 +148,7 @@
     <div class="flex items-center gap-2">
         
         <!-- GAMBAR CAPTCHA -->
-        <img src="{{ captcha_src('default') }}" id="captcha-img"
+        <img src="{{ captcha_src('flat') }}" id="captcha-img"
             class="h-10 rounded border border-gray-300 bg-white px-2">
 
         <!-- BUTTON REFRESH -->
