@@ -22,6 +22,9 @@ class ForceHttps
             if (!$request->secure() && $request->header('X-Forwarded-Proto') !== 'https') {
                 return redirect()->secure($request->getRequestUri());
             }
+
+            // Force Laravel to generate HTTPS URLs
+            \URL::forceScheme('https');
         }
 
         return $next($request);
