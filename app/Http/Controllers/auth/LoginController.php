@@ -47,10 +47,12 @@ class LoginController extends Controller
         }
 
         // ✅ VALIDASI CAPTCHA (DITAMBAHKAN)
-        if (empty($request->captcha)) {
-            $errors['captcha'] = 'Captcha wajib diisi.';
-        } elseif (!captcha_check($request->captcha)) {
-            $errors['captcha'] = 'Captcha salah.';
+        if (!env('CAPTCHA_DISABLE', false)) {
+            if (empty($request->captcha)) {
+                $errors['captcha'] = 'Captcha wajib diisi.';
+            } elseif (!captcha_check($request->captcha)) {
+                $errors['captcha'] = 'Captcha salah.';
+            }
         }
         
         if (!empty($errors)) {
