@@ -10,7 +10,7 @@ return [
 
     // ✅ FIX WAJIB (JANGAN NULL)
     'fontsDirectory' => public_path('assets/fonts'),
-    'bgsDirectory' => public_path('assets/backgrounds'),
+    'bgsDirectory' => null,
 
     'default' => [
         'length' => 5,
