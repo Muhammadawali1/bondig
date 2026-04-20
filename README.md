@@ -1,11 +1,155 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="200" alt="Laravel Logo">
+  <h1 align="center">Sistem Manajemen Bon Barang</h1>
+  <p align="center">Aplikasi Web-Based untuk Manajemen Permintaan dan Persetujuan Barang</p>
+</p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Laravel-12.0-red.svg" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP-8.2+-blue.svg" alt="PHP">
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
 </p>
+
+## Tentang Project
+
+Sistem Manajemen Bon Barang adalah aplikasi web berbasis Laravel yang dirancang untuk mengotomatiskan dan menyederhanakan proses permintaan barang dalam organisasi. Sistem ini memfasilitasi alur kerja dari pengajuan permintaan oleh pegawai hingga persetujuan multi-level dan pemenuhan oleh gudang.
+
+## Fitur Utama
+
+### **Multi-Level Approval Workflow**
+- Pegawai mengajukan permintaan barang
+- Atasan melakukan persetujuan awal
+- Gudang melakukan verifikasi stok dan pemenuhan
+- Administrator monitoring dan oversight
+
+### **Role-Based Access Control**
+- **Administrator**: Manajemen sistem, monitoring, laporan
+- **Atasan**: Persetujuan permintaan, monitoring tim
+- **Gudang**: Manajemen stok, pemenuhan permintaan
+- **Pegawai**: Pengajuan permintaan, tracking status
+
+### **Manajemen Inventaris**
+- Real-time stock tracking
+- Automatic stock deduction
+- Barang management dengan kategori
+- History dan audit trail lengkap
+
+### **Notifikasi Real-Time**
+- Email notifications untuk setiap status update
+- Dashboard notifications
+- Status tracking untuk semua stakeholder
+
+### **Reporting & Analytics**
+- Laporan permintaan per periode
+- Statistik per departemen
+- Export data ke Excel
+- Visual dashboard
+
+## Teknologi
+
+### **Backend**
+- **Framework**: Laravel 12.0
+- **Language**: PHP 8.2+
+- **Database**: MySQL/MariaDB
+- **Authentication**: Laravel Sanctum
+
+### **Frontend**
+- **Template Engine**: Blade
+- **CSS Framework**: Bootstrap 5
+- **JavaScript**: Vanilla JS + jQuery
+- **Build Tool**: Vite
+
+### **Additional Packages**
+- `maatwebsite/excel` - Export/Import Excel
+- `mews/captcha` - Security verification
+- `ext-gd` - Image processing
+
+## Instalasi
+
+### **Requirements**
+- PHP 8.2 atau lebih tinggi
+- Composer
+- MySQL/MariaDB
+- Node.js & NPM
+
+### **Setup Instructions**
+```bash
+# Clone repository
+git clone <repository-url>
+cd bonn-dig-final-bos
+
+# Install dependencies
+composer install
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Database setup
+php artisan migrate
+php artisan db:seed
+
+# Build assets
+npm run build
+
+# Start development server
+php artisan serve
+```
+
+## Struktur Database
+
+### **Core Tables**
+- `users` - Manajemen pengguna
+- `divisis` - Data departemen
+- `barangs` - Master data barang
+- `bon_barangs` - Header permintaan
+- `bon_barang_details` - Detail permintaan
+- `notifikasis` - System notifications
+
+## Screenshots
+
+*(Add screenshots of the application here)*
+
+## Deployment
+
+### **Production Deployment**
+```bash
+# Optimize for production
+composer install --optimize-autoloader --no-dev
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Set environment variables
+APP_ENV=production
+APP_DEBUG=false
+```
+
+### **Docker Support**
+- Dockerfile included for containerization
+- Ready for cloud deployment (Railway, Heroku, etc.)
+
+## Kontribusi
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## License
+
+Project ini dilisensikan under MIT License - lihat file [LICENSE](LICENSE) untuk detail.
+
+## Contact
+
+- **Developer**: [Your Name]
+- **Email**: [your.email@example.com]
+- **LinkedIn**: [Your LinkedIn Profile]
+
+---
 
 ## About Laravel
 
