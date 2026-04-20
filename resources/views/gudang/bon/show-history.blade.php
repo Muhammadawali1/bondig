@@ -51,6 +51,11 @@
                                     ✅ Disetujui
                                 </span>
                                 @break
+                            @case('sebagian')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    ⚡ Sebagian Disetujui
+                                </span>
+                                @break
                             @case('ditolak')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                                     ❌ Ditolak
@@ -77,7 +82,7 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <p class="text-sm font-medium text-gray-500">Proses Selesai</p>
-                        @if($bonBarang->status === 'disetujui' && $bonBarang->tanggal_gudang)
+                        @if(($bonBarang->status === 'disetujui' || $bonBarang->status === 'sebagian') && $bonBarang->tanggal_gudang)
                             <p class="text-lg font-semibold text-green-600">{{ $bonBarang->tanggal_gudang->format('F Y') }}</p>
                         @elseif($bonBarang->status === 'ditolak' && $bonBarang->tanggal_atasan)
                             <p class="text-lg font-semibold text-red-600">{{ $bonBarang->tanggal_atasan->format('F Y') }}</p>
