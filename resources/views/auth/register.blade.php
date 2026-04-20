@@ -260,7 +260,9 @@ function togglePassword(fieldId, button) {
 
 function refreshCaptcha(id = 'captcha-img') {
     const captcha = document.getElementById(id);
-    captcha.src = "{{ captcha_src() }}" + '?' + Date.now();
+    const originalSrc = captcha.src;
+    const baseUrl = originalSrc.split('?')[0];
+    captcha.src = baseUrl + '?' + Date.now();
 }
 </script>
 
