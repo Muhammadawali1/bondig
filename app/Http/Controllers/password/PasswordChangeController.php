@@ -185,6 +185,7 @@ class PasswordChangeController extends Controller
                 'pesan' => $passwordRequest->user->name . ' mengajukan permintaan ubah password.',
                 'tipe' => Notifikasi::TIPE_PASSWORD_REQUEST,
                 'dibaca' => false,
+                'url' => '/administrator/password-requests',
             ]);
         }
     }

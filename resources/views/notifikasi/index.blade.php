@@ -78,7 +78,11 @@
                                                 </div>
                                             </div>
                                             <div class="ml-4 flex-shrink-0">
-                                                @if($notifikasi->bon_barang_id)
+                                                @if($notifikasi->url)
+                                                    <a href="{{ $notifikasi->url }}" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                        Lihat Detail
+                                                    </a>
+                                                @elseif($notifikasi->bon_barang_id)
                                                     @if($notifikasi->tipe === 'bon_disetujui_gudang' && auth()->user()->isPegawai())
                                                         <!-- Don't show Lihat Bon button for pegawai after gudang approval -->
                                                     @elseif($notifikasi->tipe === 'bon_disetujui_gudang' && auth()->user()->isAtasan())
