@@ -22,8 +22,8 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'nip' => fake()->unique()->numerify('########'), // 🔥 generate NIP 8 digit
+            'name' => $this->faker->name(),
+            'nip' => $this->faker->unique()->numerify('########'), // 🔥 generate NIP 8 digit
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
