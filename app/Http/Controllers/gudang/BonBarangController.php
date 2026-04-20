@@ -25,22 +25,22 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function history(Request $request)
     {
         $query = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'sebagian_disetujui'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '');
-        
+
         // Filter berdasarkan kategori
         if ($request->has('category') && $request->category === 'disetujui') {
             $query->where('status', 'disetujui');
         }
-        
+
         // Filter berdasarkan bulan
         if ($request->has('bulan') && $request->bulan) {
             $query->whereMonth('tanggal_pengajuan', $request->bulan);
         }
-        
+
         $bonBarangs = $query->orderByRaw("CAST(SUBSTRING(kode_bon, 4) AS UNSIGNED) DESC")->get();
-        
+
         // Check if 'semua' category is requested
         if ($request->has('category') && $request->category === 'semua') {
             // Return flattened data for 'semua' category
@@ -49,7 +49,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             // Default: group by divisi for other categories
             $bonBarangs = $bonBarangs->groupBy('divisi');
         }
-        
+
         return view('gudang.bon.history', compact('bonBarangs'));
     }
 
@@ -65,11 +65,11 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showHistory($id)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'sebagian_disetujui'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($id);
-        
+
         return view('gudang.bon.show-history', compact('bonBarang'));
     }
 
@@ -97,21 +97,31 @@ class BonBarangController extends \App\Http\Controllers\Controller
         DB::beginTransaction();
         try {
             // Update bon details and barang stock
+            $hasSebagian = false;
+            $hasDisetujui = false;
             foreach ($request->detail_id as $index => $detailId) {
                 $detail = BonBarangDetail::find($detailId);
                 if ($detail) {
                     $barang = Barang::find($detail->barang_id);
-                    $jumlahFinal = $request->jumlah_disetujui[$index]; // Perbaiki nama field
-                    
+                    $jumlahFinal = $request->jumlah_disetujui[$index];
+
                     // Update bon detail
                     $detail->update([
                         'jumlah_disetujui' => $jumlahFinal,
                         'status_detail' => $request->status_detail[$index],
                         'catatan' => $request->catatan[$index] ?? null,
                     ]);
-                    
-                    // Update barang stock if approved
-                    if ($request->status_detail[$index] === 'disetujui' && $jumlahFinal > 0) {
+
+                    // Track status
+                    if ($request->status_detail[$index] === 'sebagian') {
+                        $hasSebagian = true;
+                    }
+                    if ($request->status_detail[$index] === 'disetujui') {
+                        $hasDisetujui = true;
+                    }
+
+                    // Update barang stock if approved or partial
+                    if (($request->status_detail[$index] === 'disetujui' || $request->status_detail[$index] === 'sebagian') && $jumlahFinal > 0) {
                         $barang->update([
                             'stok' => $barang->stok - $jumlahFinal
                         ]);
@@ -119,10 +129,16 @@ class BonBarangController extends \App\Http\Controllers\Controller
                 }
             }
 
-            // Update bon status dan generate kode bon (final approval)
+            // Determine bon status based on detail statuses
+            $finalStatus = 'disetujui';
+            if ($hasSebagian) {
+                $finalStatus = 'sebagian_disetujui';
+            }
+
+            // Update bon status dan generate kode bon
             $bonBarang->update([
                 'kode_bon' => BonBarang::generateKodeBon(),
-                'status' => 'disetujui',
+                'status' => $finalStatus,
                 'tanggal_gudang' => now(),
             ]);
 
