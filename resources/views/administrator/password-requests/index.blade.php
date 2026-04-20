@@ -64,17 +64,26 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $request->user->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $request->user->nip }}</div>
+                                        @if($request->user)
+                                            <div class="text-sm font-medium text-gray-900">{{ $request->user->name }}</div>
+                                            <div class="text-sm text-gray-500">{{ $request->user->nip }}</div>
+                                        @else
+                                            <div class="text-sm font-medium text-gray-900">Pengguna Dihapus</div>
+                                            <div class="text-sm text-gray-500">N/A</div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs font-medium rounded-full 
-                                            @if($request->user->role === 'administrator') bg-red-100 text-red-800
-                                            @elseif($request->user->role === 'atasan') bg-green-100 text-green-800
-                                            @elseif($request->user->role === 'gudang') bg-purple-100 text-purple-800
-                                            @else bg-blue-100 text-blue-800 @endif">
-                                            {{ ucfirst($request->user->role) }}
-                                        </span>
+                                        @if($request->user)
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full
+                                                @if($request->user->role === 'administrator') bg-red-100 text-red-800
+                                                @elseif($request->user->role === 'atasan') bg-green-100 text-green-800
+                                                @elseif($request->user->role === 'gudang') bg-purple-100 text-purple-800
+                                                @else bg-blue-100 text-blue-800 @endif">
+                                                {{ ucfirst($request->user->role) }}
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">N/A</span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @switch($request->status)
