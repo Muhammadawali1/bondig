@@ -162,7 +162,7 @@ Project ini pake MIT License. Bebas dipake, dimodif, dll. Cek file [LICENSE](LIC
 
 - **GitHub**: [Muhammadawali1](https://github.com/Muhammadawali1)
 - **Email**: muhammadraihan9222@gmail.com
-- **LinkedIn**: [LinkedIn Profile](hhttps://www.linkedin.com/in/muhammad-awali-raihannul-labib-001b373b8/)
+- **LinkedIn**: [LinkedIn Profile](https://www.linkedin.com/in/muhammad-awali-raihannul-labib-001b373b8/)
 
 ---
 
