@@ -31,7 +31,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->findOrFail($id);
 
         // Prevent access to bon approved by gudang
-        if ($bonBarang->status === 'disetujui') {
+        if (in_array($bonBarang->status, ['disetujui', 'sebagian'])) {
             return redirect()->route('atasan.bon.index');
         }
 
@@ -202,7 +202,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->findOrFail($id);
 
         // Prevent access to bon approved by gudang
-        if ($bonBarang->status === 'disetujui') {
+        if (in_array($bonBarang->status, ['disetujui', 'sebagian'])) {
             return redirect()->route('atasan.bon.my');
         }
 

@@ -28,7 +28,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
         
         $query = BonBarang::where('pegawai_id', $user->id)
             ->with(['details.barang'])
-            ->where('status', '!=', 'disetujui'); // Exclude approved bon from pegawai view
+            ->whereNotIn('status', ['disetujui', 'sebagian']); // Exclude approved bon from pegawai view
 
         if ($status) {
             $query->where('status', $status);
@@ -120,7 +120,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->findOrFail($id);
 
         // Prevent access to bon approved by gudang
-        if ($bonBarang->status === 'disetujui') {
+        if (in_array($bonBarang->status, ['disetujui', 'sebagian'])) {
             return redirect()->route('pegawai.bon.index');
         }
 
