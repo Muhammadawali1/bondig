@@ -11,6 +11,9 @@ class BarangController extends \App\Http\Controllers\Controller
     {
         $barangs = Barang::query();
         
+        // Sembunyikan barang dengan stok 0 untuk atasan
+        $barangs->where('stok', '>', 0);
+        
         // Filter by category if provided
         if (request()->has('kategori') && request('kategori') !== '') {
             $barangs->where('kategori', request('kategori'));

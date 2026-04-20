@@ -44,42 +44,52 @@ class BonBarang extends Model
     {
         $currentYear = $year ?? date('Y');
         
-        // Retry mechanism to ensure unique code
-        $maxRetries = 5;
-        for ($i = 0; $i < $maxRetries; $i++) {
-            // Use raw SQL with FOR UPDATE to ensure atomic operation
-            $lastSequence = \DB::selectOne("
-                SELECT CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) as sequence
-                FROM bon_barangs
-                WHERE kode_bon IS NOT NULL
-                AND kode_bon != ''
-                AND tahun = ?
-                ORDER BY CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC
-                LIMIT 1
-                FOR UPDATE
-            ", [$currentYear]);
+        // Use transaction with lock to ensure atomic operation
+        return \DB::transaction(function () use ($currentYear) {
+            // Lock the table to prevent concurrent inserts
+            \DB::statement("LOCK TABLES bon_barangs WRITE");
             
-            if ($lastSequence && $lastSequence->sequence) {
-                $sequence = $lastSequence->sequence + 1;
-            } else {
-                $sequence = 1;
-            }
-            
-            $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
-            
-            // Check if this code already exists (in case of race condition)
-            $exists = self::where('kode_bon', $newCode)
-                ->where('tahun', $currentYear)
-                ->exists();
-            
-            if (!$exists) {
+            try {
+                // Get the last sequence number for this year
+                $lastSequence = \DB::selectOne("
+                    SELECT CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) as sequence
+                    FROM bon_barangs
+                    WHERE kode_bon IS NOT NULL
+                    AND kode_bon != ''
+                    AND tahun = ?
+                    ORDER BY CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC
+                    LIMIT 1
+                ", [$currentYear]);
+                
+                if ($lastSequence && $lastSequence->sequence) {
+                    $sequence = $lastSequence->sequence + 1;
+                } else {
+                    $sequence = 1;
+                }
+                
+                $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+                
+                // Double-check if this code already exists (shouldn't happen with table lock)
+                $exists = self::where('kode_bon', $newCode)
+                    ->where('tahun', $currentYear)
+                    ->exists();
+                
+                if ($exists) {
+                    // If somehow still exists, increment and retry
+                    do {
+                        $sequence++;
+                        $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+                        $exists = self::where('kode_bon', $newCode)
+                            ->where('tahun', $currentYear)
+                            ->exists();
+                    } while ($exists);
+                }
+                
                 return $newCode;
+            } finally {
+                // Always release the lock
+                \DB::statement("UNLOCK TABLES");
             }
-            
-            // If code exists, retry with next iteration
-        }
-        
-        // If all retries failed, throw exception
-        throw new \Exception('Failed to generate unique bon code after ' . $maxRetries . ' retries');
+        });
     }
 }
