@@ -123,7 +123,7 @@
 
                         <button type="button" onclick="togglePassword('password', this)"
                             class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700 transition duration-200">
-                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                            <svg id="eyeIcon" xmlns="https://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

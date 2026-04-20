@@ -144,7 +144,7 @@
                             placeholder="••••••••">
                         <button type="button" onclick="togglePassword('password', this)"
                             class="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-gray-500 hover:text-gray-700 focus:outline-none transition duration-200">
-                            <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                            <svg id="eyeOpen" xmlns="https://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -166,7 +166,7 @@
                             placeholder="••••••••">
                         <button type="button" onclick="togglePassword('password_confirmation', this)"
                             class="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-gray-500 hover:text-gray-700 focus:outline-none transition duration-200">
-                            <svg id="eyeOpenConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                            <svg id="eyeOpenConfirm" xmlns="https://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -175,7 +175,7 @@
                        -1.274 4.057-5.065 7-9.542 7
                        -4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            <svg id="eyeClosedConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden"
+                            <svg id="eyeClosedConfirm" xmlns="https://www.w3.org/2000/svg" class="h-5 w-5 hidden"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19
                        c-4.478 0-8.268-2.943-9.542-7
