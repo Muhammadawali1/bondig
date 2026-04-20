@@ -57,10 +57,20 @@ class UserDivisiSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            User::firstOrCreate(
-                ['nip' => $userData['nip']],
-                $userData
-            );
+            $user = User::where('nip', $userData['nip'])->first();
+            
+            if ($user) {
+                // Update existing user
+                $user->update([
+                    'name' => $userData['name'],
+                    'password' => $userData['password'],
+                    'role' => $userData['role'],
+                    'divisi' => $userData['divisi'],
+                ]);
+            } else {
+                // Create new user
+                User::create($userData);
+            }
         }
     }
 }
