@@ -25,7 +25,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function history(Request $request)
     {
         $query = BonBarang::with(['details.barang', 'pegawai'])
-            ->whereIn('status', ['disetujui', 'sebagian_disetujui'])
+            ->whereIn('status', ['disetujui', 'sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '');
 
@@ -65,7 +65,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showHistory($id)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->whereIn('status', ['disetujui', 'sebagian_disetujui'])
+            ->whereIn('status', ['disetujui', 'sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($id);
@@ -132,7 +132,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             // Determine bon status based on detail statuses
             $finalStatus = 'disetujui';
             if ($hasSebagian) {
-                $finalStatus = 'sebagian_disetujui';
+                $finalStatus = 'sebagian';
             }
 
             // Update bon status dan generate kode bon

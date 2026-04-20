@@ -95,7 +95,7 @@
                                                         ✅ Disetujui
                                                     </span>
                                                     @break
-                                                @case('sebagian_disetujui')
+                                                @case('sebagian')
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                         ⚡ Sebagian Disetujui
                                                     </span>
