@@ -108,10 +108,20 @@ php artisan serve
 
 ## Screenshots
 
-*(Nanti tambahin screenshot aplikasinya)*
+Berikut adalah tampilan aplikasi Sistem Manajemen Bon Barang:
 
-![Dashboard](https://via.placeholder.com/800x400?text=Dashboard+Screenshot)
-![Request Form](https://via.placeholder.com/800x400?text=Request+Form)
+### Dashboard Utama
+![Dashboard](docs/images/dashboard.png)
+*Dashboard untuk monitoring permintaan barang real-time*
+
+### Form Pengajuan Barang
+![Request Form](docs/images/request-form.png)
+*Form pengajuan barang yang user-friendly dan intuitif*
+
+### History & Tracking
+![History](docs/images/history.png)
+*History permintaan barang dan tracking status*
+
 
 ## Cara Deploy
 
