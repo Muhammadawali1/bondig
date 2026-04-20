@@ -250,6 +250,10 @@ class BonBarangController extends \App\Http\Controllers\Controller
             BonBarang::whereYear('tanggal_pengajuan', $tahun)->delete();
             \Log::info('Delete Bon By Year - Deleted all bon records for year ' . $tahun);
 
+            // Reset sequence in bon_sequence table for the specified year
+            \DB::table('bon_sequence')->where('year', $tahun)->delete();
+            \Log::info('Delete Bon By Year - Reset sequence for year ' . $tahun);
+
             DB::commit();
             \Log::info('Delete Bon By Year - Transaction committed');
 
