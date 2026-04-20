@@ -15,7 +15,6 @@ class Notifikasi extends Model
         'pesan',
         'tipe',
         'dibaca',
-        'url',
     ];
 
     protected $casts = [

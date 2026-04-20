@@ -78,8 +78,8 @@
                                                 </div>
                                             </div>
                                             <div class="ml-4 flex-shrink-0">
-                                                @if($notifikasi->url)
-                                                    <a href="{{ $notifikasi->url }}" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                @if($notifikasi->password_change_request_id && $notifikasi->tipe === 'password_request')
+                                                    <a href="/administrator/password-requests" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                         Lihat Detail
                                                     </a>
                                                 @elseif($notifikasi->bon_barang_id)
