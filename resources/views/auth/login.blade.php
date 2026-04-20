@@ -145,22 +145,22 @@
         Verifikasi
     </label>
 
-    <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center gap-2">
         
         <!-- GAMBAR CAPTCHA -->
         <img src="{{ captcha_src('flat') }}" id="captcha-img"
-            class="h-10 rounded border border-gray-300 bg-white px-2">
+            class="h-10 rounded border border-gray-300 bg-white px-2 flex-shrink-0">
 
         <!-- BUTTON REFRESH -->
         <button type="button" onclick="refreshCaptcha()"
-            class="h-10 w-10 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+            class="h-10 w-10 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 transition flex-shrink-0">
             ⟳
         </button>
 
         <!-- INPUT CAPTCHA -->
         <input type="text" name="captcha" required
             placeholder="Kode Captcha"
-            class="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+            class="flex-1 min-w-[120px] px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
     </div>
 
     <!-- ERROR -->
