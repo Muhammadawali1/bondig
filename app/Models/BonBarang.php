@@ -44,26 +44,23 @@ class BonBarang extends Model
     {
         $currentYear = $year ?? date('Y');
         
-        // Use database lock to prevent race conditions
-        return \DB::transaction(function() use ($currentYear) {
-            // Get the last sequence number for this year using a database lock
-            $lastBon = self::whereNotNull('kode_bon')
-                ->where('kode_bon', '!=', '')
-                ->where('tahun', $currentYear)
-                ->lockForUpdate()
-                ->orderByRaw("CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC")
-                ->first();
-            
-            if ($lastBon) {
-                // Extract the sequence number from the last code
-                $parts = explode('-', $lastBon->kode_bon);
-                $lastSequence = intval(end($parts));
-                $sequence = $lastSequence + 1;
-            } else {
-                $sequence = 1;
-            }
-            
-            return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
-        });
+        // Get the last sequence number for this year using a database lock
+        $lastBon = self::whereNotNull('kode_bon')
+            ->where('kode_bon', '!=', '')
+            ->where('tahun', $currentYear)
+            ->lockForUpdate()
+            ->orderByRaw("CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC")
+            ->first();
+        
+        if ($lastBon) {
+            // Extract the sequence number from the last code
+            $parts = explode('-', $lastBon->kode_bon);
+            $lastSequence = intval(end($parts));
+            $sequence = $lastSequence + 1;
+        } else {
+            $sequence = 1;
+        }
+        
+        return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
     }
 }
