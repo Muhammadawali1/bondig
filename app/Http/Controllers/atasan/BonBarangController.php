@@ -35,7 +35,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             return redirect()->route('atasan.bon.index');
         }
 
-        $barangs = Barang::all();
+        $barangs = Barang::where('stok', '>', 0)->get();
 
         return view('atasan.bon.show', compact('bonBarang', 'barangs'));
     }
@@ -150,7 +150,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
     public function myBonCreate(Request $request)
     {
-        $barangs = Barang::all();
+        $barangs = Barang::where('stok', '>', 0)->get();
         $selectedBarang = null;
         
         if ($request->has('barang_id')) {
@@ -220,7 +220,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->where('status', 'menunggu_gudang')
             ->findOrFail($id);
         
-        $barangs = Barang::all();
+        $barangs = Barang::where('stok', '>', 0)->get();
         
         return view('atasan.bon.my-edit', compact('bonBarang', 'barangs'));
     }

@@ -41,7 +41,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
     public function create(Request $request)
     {
-        $barangs = Barang::all();
+        $barangs = Barang::where('stok', '>', 0)->get();
         $selectedBarang = null;
         
         if ($request->has('barang_id')) {
