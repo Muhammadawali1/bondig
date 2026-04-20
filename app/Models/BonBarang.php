@@ -44,45 +44,26 @@ class BonBarang extends Model
     {
         $currentYear = $year ?? date('Y');
         
-        // Use transaction with row locking to ensure atomic operation
-        return \DB::transaction(function () use ($currentYear) {
-            // Get the last sequence number for this year with row lock
-            $lastSequence = \DB::selectOne("
-                SELECT CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) as sequence
-                FROM bon_barangs
-                WHERE kode_bon IS NOT NULL
-                AND kode_bon != ''
-                AND tahun = ?
-                ORDER BY CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC
-                LIMIT 1
-                FOR UPDATE
-            ", [$currentYear]);
-            
-            if ($lastSequence && $lastSequence->sequence) {
-                $sequence = $lastSequence->sequence + 1;
-            } else {
-                $sequence = 1;
-            }
-            
-            $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
-            
-            // Double-check if this code already exists (in case of race condition)
-            $exists = self::where('kode_bon', $newCode)
-                ->where('tahun', $currentYear)
-                ->exists();
-            
-            if ($exists) {
-                // If somehow still exists, increment and retry
-                do {
-                    $sequence++;
-                    $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
-                    $exists = self::where('kode_bon', $newCode)
-                        ->where('tahun', $currentYear)
-                        ->exists();
-                } while ($exists);
-            }
-            
-            return $newCode;
-        });
+        // Use sequence table for atomic sequence tracking
+        // This is called from within a transaction in the controller
+        $sequenceRecord = \DB::table('bon_sequence')
+            ->where('year', $currentYear)
+            ->lockForUpdate()
+            ->first();
+        
+        if ($sequenceRecord) {
+            $sequence = $sequenceRecord->last_sequence + 1;
+            \DB::table('bon_sequence')
+                ->where('year', $currentYear)
+                ->update(['last_sequence' => $sequence]);
+        } else {
+            $sequence = 1;
+            \DB::table('bon_sequence')->insert([
+                'year' => $currentYear,
+                'last_sequence' => $sequence
+            ]);
+        }
+        
+        return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
     }
 }
