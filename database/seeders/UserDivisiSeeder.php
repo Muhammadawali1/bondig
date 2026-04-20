@@ -57,7 +57,7 @@ class UserDivisiSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            User::updateOrCreate(
+            User::firstOrCreate(
                 ['nip' => $userData['nip']],
                 $userData
             );
