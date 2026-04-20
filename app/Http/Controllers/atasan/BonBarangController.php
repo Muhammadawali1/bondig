@@ -19,6 +19,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
         $bonBarangs = BonBarang::with(['details.barang', 'pegawai'])
             ->where('divisi', $userDivisi)
             ->whereIn('status', ['menunggu_atasan', 'menunggu_gudang', 'ditolak'])
+            ->whereNotIn('status', ['disetujui', 'disetujui_sebagian'])
             ->latest()
             ->get();
         
@@ -30,8 +31,8 @@ class BonBarangController extends \App\Http\Controllers\Controller
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
             ->findOrFail($id);
 
-        // Prevent access to bon approved by gudang
-        if ($bonBarang->status === 'disetujui') {
+        // Prevent access to bon approved or partially approved by gudang
+        if ($bonBarang->status === 'disetujui' || $bonBarang->status === 'disetujui_sebagian') {
             return redirect()->route('atasan.bon.index');
         }
 
@@ -141,7 +142,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     {
         $bonBarangs = BonBarang::with(['details.barang'])
             ->where('pegawai_id', auth()->id())
-            ->where('status', '!=', 'disetujui') // Exclude approved bon from atasan my bon view
+            ->whereNotIn('status', ['disetujui', 'disetujui_sebagian']) // Exclude approved and partially approved bon from atasan my bon view
             ->latest()
             ->get();
         
@@ -205,8 +206,8 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->where('pegawai_id', auth()->id())
             ->findOrFail($id);
 
-        // Prevent access to bon approved by gudang
-        if ($bonBarang->status === 'disetujui') {
+        // Prevent access to bon approved or partially approved by gudang
+        if ($bonBarang->status === 'disetujui' || $bonBarang->status === 'disetujui_sebagian') {
             return redirect()->route('atasan.bon.my');
         }
 
