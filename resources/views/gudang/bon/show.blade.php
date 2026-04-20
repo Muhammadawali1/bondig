@@ -126,7 +126,8 @@
                                                        max="{{ $detail->barang->stok }}"
                                                        class="w-20 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                                        onchange="calculateStokSetelah(this)"
-                                                       data-stok-awal="{{ $detail->barang->stok }}">
+                                                       data-stok-awal="{{ $detail->barang->stok }}"
+                                                       data-jumlah-diminta="{{ $detail->jumlah_diminta }}">
                                                 {{ $detail->barang->satuan }}
                                             </td>
                                             <td class="p-3">
@@ -291,6 +292,7 @@ function calculateStokSetelah(input) {
     const row = input.closest('tr');
     const stokAwal = parseInt(input.dataset.stokAwal);
     const jumlahFinal = parseInt(input.value) || 0;
+    const jumlahDiminta = parseInt(input.dataset.jumlahDiminta);
     const stokSetelah = stokAwal - jumlahFinal;
     
     const stokSetelahSpan = row.querySelector('.stok-setelah');
@@ -303,6 +305,16 @@ function calculateStokSetelah(input) {
         stokSetelahSpan.className = 'stok-setelah font-medium text-yellow-600';
     } else {
         stokSetelahSpan.className = 'stok-setelah font-medium text-green-600';
+    }
+    
+    // Automatically update status based on jumlah_final
+    const statusSelect = row.querySelector('select[name="status_detail[]"]');
+    if (jumlahFinal === 0) {
+        statusSelect.value = 'ditolak';
+    } else if (jumlahFinal < jumlahDiminta) {
+        statusSelect.value = 'sebagian';
+    } else {
+        statusSelect.value = 'disetujui';
     }
 }
 

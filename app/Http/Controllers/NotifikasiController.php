@@ -235,4 +235,32 @@ class NotifikasiController extends Controller
             $bonBarang->id
         );
     }
+
+    public static function notifyPegawaiBonDisetujuiSebagian($bonBarang)
+    {
+        self::createNotifikasi(
+            $bonBarang->pegawai_id,
+            'Bon Disetujui Sebagian',
+            "Bon {$bonBarang->kode_bon} telah disetujui sebagian oleh gudang",
+            Notifikasi::TIPE_BON_DISETUJUI_SEBAGIAN,
+            $bonBarang->id
+        );
+    }
+
+    public static function notifyAtasanBonDisetujuiSebagian($bonBarang)
+    {
+        $atasans = User::where('role', User::ROLE_ATASAN)
+            ->where('divisi', $bonBarang->divisi)
+            ->get();
+        
+        foreach ($atasans as $atasan) {
+            self::createNotifikasi(
+                $atasan->id,
+                'Bon Disetujui Sebagian',
+                "Bon {$bonBarang->kode_bon} telah disetujui sebagian oleh gudang",
+                Notifikasi::TIPE_BON_DISETUJUI_SEBAGIAN,
+                $bonBarang->id
+            );
+        }
+    }
 }

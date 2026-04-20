@@ -25,6 +25,7 @@ class Notifikasi extends Model
     const TIPE_BON_MASUK = 'bon_masuk';
     const TIPE_BON_DISETUJUI_ATASAN = 'bon_disetujui_atasan';
     const TIPE_BON_DISETUJUI_GUDANG = 'bon_disetujui_gudang';
+    const TIPE_BON_DISETUJUI_SEBAGIAN = 'bon_disetujui_sebagian';
     const TIPE_BON_DITOLAK_ATASAN = 'bon_ditolak_atasan';
     const TIPE_BON_DITOLAK_GUDANG = 'bon_ditolak_gudang';
     const TIPE_PASSWORD_REQUEST = 'password_request';
@@ -52,6 +53,7 @@ class Notifikasi extends Model
             self::TIPE_BON_MASUK => 'Bon Masuk',
             self::TIPE_BON_DISETUJUI_ATASAN => 'Bon Disetujui Atasan',
             self::TIPE_BON_DISETUJUI_GUDANG => 'Bon Disetujui Gudang',
+            self::TIPE_BON_DISETUJUI_SEBAGIAN => 'Bon Disetujui Sebagian',
             self::TIPE_BON_DITOLAK_ATASAN => 'Bon Ditolak Atasan',
             self::TIPE_BON_DITOLAK_GUDANG => 'Bon Ditolak Gudang',
             self::TIPE_PASSWORD_REQUEST => 'Permintaan Ubah Password',

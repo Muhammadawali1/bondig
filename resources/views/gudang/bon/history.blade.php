@@ -100,7 +100,7 @@
                         <div class="ml-4">
                             <p class="text-sm text-gray-500">Total Disetujui</p>
                             <p class="text-2xl font-semibold text-gray-900 stat-disetujui">
-                                {{ $bonBarangs->flatten()->where('status', 'disetujui')->count() }}
+                                {{ $bonBarangs->flatten()->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count() }}
                             </p>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
                                 </h3>
                                 <div class="mt-2 flex gap-4 text-sm">
     <span class="text-green-600 stat-divisi-disetujui">
-        ✅ Disetujui: {{ $bons->where('status', 'disetujui')->count() }}
+        ✅ Disetujui: {{ $bons->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count() }}
     </span>
 </div>
                             </div>
@@ -201,10 +201,15 @@
                                                                 ✅ Disetujui
                                                             </span>
                                                             @break
+                                                        @case('disetujui_sebagian')
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                ⚠️ Disetujui Sebagian
+                                                            </span>
+                                                            @break
                                                     @endswitch
                                                 </td>
                                                 <td class="p-3">
-                                                    @if($bon->status === 'disetujui' && $bon->tanggal_gudang)
+                                                    @if(($bon->status === 'disetujui' || $bon->status === 'disetujui_sebagian') && $bon->tanggal_gudang)
                                                         {{ $bon->tanggal_gudang->format('F Y') }}
                                                     @elseif($bon->status === 'menunggu_atasan' || $bon->status === 'menunggu_gudang')
                                                         <span class="text-yellow-600">Menunggu Persetujuan</span>
@@ -263,7 +268,7 @@
                         </h3>
                         <div class="mt-2 flex gap-4 text-sm">
                             <span class="text-green-600">
-                                ✅ Disetujui: {{ $allBons->where('status', 'disetujui')->count() }}
+                                ✅ Disetujui: {{ $allBons->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count() }}
                             </span>
                         </div>
                     </div>
@@ -318,10 +323,15 @@
                                                         ✅ Disetujui
                                                     </span>
                                                     @break
+                                                @case('disetujui_sebagian')
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        ⚠️ Disetujui Sebagian
+                                                    </span>
+                                                    @break
                                             @endswitch
                                         </td>
                                         <td class="p-3">
-                                            @if($bon->status === 'disetujui' && $bon->tanggal_gudang)
+                                            @if(($bon->status === 'disetujui' || $bon->status === 'disetujui_sebagian') && $bon->tanggal_gudang)
                                                 {{ $bon->tanggal_gudang->format('F Y') }}
                                             @elseif($bon->status === 'menunggu_atasan' || $bon->status === 'menunggu_gudang')
                                                 <span class="text-yellow-600">Menunggu Persetujuan</span>

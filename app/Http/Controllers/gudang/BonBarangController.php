@@ -25,13 +25,13 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function history(Request $request)
     {
         $query = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '');
         
         // Filter berdasarkan kategori
         if ($request->has('category') && $request->category === 'disetujui') {
-            $query->where('status', 'disetujui');
+            $query->whereIn('status', ['disetujui', 'disetujui_sebagian']);
         }
         
         // Filter berdasarkan bulan
@@ -65,7 +65,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showHistory($id)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($id);
@@ -96,12 +96,21 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
         DB::beginTransaction();
         try {
+            // Check if any details have partial approval
+            $hasPartialApproval = false;
+            foreach ($request->status_detail as $status) {
+                if ($status === 'sebagian') {
+                    $hasPartialApproval = true;
+                    break;
+                }
+            }
+
             // Update bon details and barang stock
             foreach ($request->detail_id as $index => $detailId) {
                 $detail = BonBarangDetail::find($detailId);
                 if ($detail) {
                     $barang = Barang::find($detail->barang_id);
-                    $jumlahFinal = $request->jumlah_disetujui[$index]; // Perbaiki nama field
+                    $jumlahFinal = $request->jumlah_disetujui[$index];
                     
                     // Update bon detail
                     $detail->update([
@@ -110,8 +119,8 @@ class BonBarangController extends \App\Http\Controllers\Controller
                         'catatan' => $request->catatan[$index] ?? null,
                     ]);
                     
-                    // Update barang stock if approved
-                    if ($request->status_detail[$index] === 'disetujui' && $jumlahFinal > 0) {
+                    // Update barang stock if approved (full or partial)
+                    if (($request->status_detail[$index] === 'disetujui' || $request->status_detail[$index] === 'sebagian') && $jumlahFinal > 0) {
                         $barang->update([
                             'stok' => $barang->stok - $jumlahFinal
                         ]);
@@ -120,19 +129,26 @@ class BonBarangController extends \App\Http\Controllers\Controller
             }
 
             // Update bon status dan generate kode bon (final approval)
+            $bonStatus = $hasPartialApproval ? 'disetujui_sebagian' : 'disetujui';
             $bonBarang->update([
                 'kode_bon' => BonBarang::generateKodeBon($bonBarang->tahun),
-                'status' => 'disetujui',
+                'status' => $bonStatus,
                 'tanggal_gudang' => now(),
             ]);
 
-            // Kirim notifikasi ke pegawai dan atasan
-            NotifikasiController::notifyPegawaiBonDisetujuiGudang($bonBarang);
-            NotifikasiController::notifyAtasanBonDisetujuiGudang($bonBarang);
+            // Kirim notifikasi ke pegawai dan atasan berdasarkan status
+            if ($hasPartialApproval) {
+                NotifikasiController::notifyPegawaiBonDisetujuiSebagian($bonBarang);
+                NotifikasiController::notifyAtasanBonDisetujuiSebagian($bonBarang);
+            } else {
+                NotifikasiController::notifyPegawaiBonDisetujuiGudang($bonBarang);
+                NotifikasiController::notifyAtasanBonDisetujuiGudang($bonBarang);
+            }
 
             \Log::info('Gudang Approve Debug - Success', [
                 'bon_id' => $bonBarang->id,
-                'new_status' => $bonBarang->status
+                'new_status' => $bonBarang->status,
+                'has_partial_approval' => $hasPartialApproval
             ]);
 
             DB::commit();
@@ -243,7 +259,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showEditDetail($bonId, $detailId)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($bonId);
@@ -256,7 +272,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showAddDetail($bonId)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->where('status', 'disetujui')
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($bonId);
@@ -296,7 +312,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             // Adjust stock based on difference
             // If new amount > old amount, deduct more from stock
             // If new amount < old amount, add back to stock
-            if ($request->status_detail === 'disetujui') {
+            if ($request->status_detail === 'disetujui' || $request->status_detail === 'sebagian') {
                 $barang->update([
                     'stok' => $barang->stok - $difference
                 ]);
