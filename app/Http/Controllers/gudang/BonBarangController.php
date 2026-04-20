@@ -104,24 +104,28 @@ class BonBarangController extends \App\Http\Controllers\Controller
                 if ($detail) {
                     $barang = Barang::find($detail->barang_id);
                     $jumlahFinal = $request->jumlah_disetujui[$index];
+                    $jumlahDiminta = $detail->jumlah_diminta;
 
-                    // Update bon detail
-                    $detail->update([
-                        'jumlah_disetujui' => $jumlahFinal,
-                        'status_detail' => $request->status_detail[$index],
-                        'catatan' => $request->catatan[$index] ?? null,
-                    ]);
-
-                    // Track status
-                    if ($request->status_detail[$index] === 'sebagian') {
+                    // Auto-determine status_detail based on comparison
+                    if ($jumlahFinal == 0) {
+                        $autoStatus = 'ditolak';
+                    } elseif ($jumlahFinal < $jumlahDiminta) {
+                        $autoStatus = 'sebagian';
                         $hasSebagian = true;
-                    }
-                    if ($request->status_detail[$index] === 'disetujui') {
+                    } else {
+                        $autoStatus = 'disetujui';
                         $hasDisetujui = true;
                     }
 
+                    // Update bon detail with auto status
+                    $detail->update([
+                        'jumlah_disetujui' => $jumlahFinal,
+                        'status_detail' => $autoStatus,
+                        'catatan' => $request->catatan[$index] ?? null,
+                    ]);
+
                     // Update barang stock if approved or partial
-                    if (($request->status_detail[$index] === 'disetujui' || $request->status_detail[$index] === 'sebagian') && $jumlahFinal > 0) {
+                    if (($autoStatus === 'disetujui' || $autoStatus === 'sebagian') && $jumlahFinal > 0) {
                         $barang->update([
                             'stok' => $barang->stok - $jumlahFinal
                         ]);
