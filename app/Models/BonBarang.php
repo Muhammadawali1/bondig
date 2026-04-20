@@ -44,26 +44,26 @@ class BonBarang extends Model
     {
         $currentYear = $year ?? date('Y');
         
-        // Cari bon yang memiliki kode bon di tahun yang sama
-        $bonsWithKode = self::whereNotNull('kode_bon')
-            ->where('kode_bon', '!=', '')
-            ->where('tahun', $currentYear)
-            ->get();
-        
-        // Extract nomor urut dari semua kode bon yang ada di tahun ini
-        $sequences = [];
-        foreach ($bonsWithKode as $bon) {
-            // Extract angka dari kode bon (AT-01, AT-02, dll)
-            $parts = explode('-', $bon->kode_bon);
-            if (count($parts) >= 2) {
-                $sequences[] = intval($parts[1]);
+        // Use database lock to prevent race conditions
+        return \DB::transaction(function() use ($currentYear) {
+            // Get the last sequence number for this year using a database lock
+            $lastBon = self::whereNotNull('kode_bon')
+                ->where('kode_bon', '!=', '')
+                ->where('tahun', $currentYear)
+                ->lockForUpdate()
+                ->orderByRaw("CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC")
+                ->first();
+            
+            if ($lastBon) {
+                // Extract the sequence number from the last code
+                $parts = explode('-', $lastBon->kode_bon);
+                $lastSequence = intval(end($parts));
+                $sequence = $lastSequence + 1;
+            } else {
+                $sequence = 1;
             }
-        }
-        
-        // Cari nomor urut tertinggi untuk tahun ini
-        $lastSequence = !empty($sequences) ? max($sequences) : 0;
-        $sequence = $lastSequence + 1;
-        
-        return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+            
+            return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+        });
     }
 }
