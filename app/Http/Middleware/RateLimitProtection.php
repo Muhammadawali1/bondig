@@ -110,8 +110,8 @@ class RateLimitProtection
         $violations++;
         Cache::put($violationsKey, $violations, 3600); // 1 hour
         
-        // Block IP after 5 violations
-        if ($violations >= 5) {
+        // Block IP after 3 violations
+        if ($violations >= 3) {
             $this->blockIp($ip, 7200); // Block for 2 hours
         }
     }

@@ -82,12 +82,25 @@ class LoginController extends Controller
         }
 
         // Cek apakah user ada dengan NIP tersebut
-        $userExists = \App\Models\User::where('nip', $request->nip)->exists();
-        
+        $user = \App\Models\User::withTrashed()->where('nip', $request->nip)->first();
+
+        if ($user) {
+            // Cek apakah user sudah dihapus (soft delete)
+            if ($user->deleted_at) {
+                throw ValidationException::withMessages([
+                    'nip' => 'Akun Anda telah dihapus oleh administrator.',
+                ]);
+            }
+
+            // User ada tapi password salah
+            throw ValidationException::withMessages([
+                'nip' => 'Password salah. Silakan coba kembali.',
+            ]);
+        }
+
+        // User tidak terdaftar
         throw ValidationException::withMessages([
-            'nip' => $userExists ? 
-                'Password salah. Silakan coba kembali.' : 
-                'NIP tidak terdaftar. Silakan periksa kembali NIP Anda.',
+            'nip' => 'NIP tidak terdaftar. Silakan periksa kembali NIP Anda.',
         ]);
     }
 

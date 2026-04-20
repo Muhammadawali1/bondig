@@ -130,16 +130,11 @@
                                                 {{ $detail->barang->satuan }}
                                             </td>
                                             <td class="p-3">
-                                                <span class="status-display inline-flex items-center px-2 py-1 rounded-full text-xs font-medium" data-jumlah-diminta="{{ $detail->jumlah_diminta }}">
-                                                    @if(($detail->jumlah_disetujui ?? $detail->jumlah_diminta) == 0)
-                                                        <span class="bg-red-100 text-red-800">Ditolak</span>
-                                                    @elseif(($detail->jumlah_disetujui ?? $detail->jumlah_diminta) < $detail->jumlah_diminta)
-                                                        <span class="bg-yellow-100 text-yellow-800">Sebagian</span>
-                                                    @else
-                                                        <span class="bg-green-100 text-green-800">Disetujui</span>
-                                                    @endif
-                                                </span>
-                                                <input type="hidden" name="status_detail[]" value="auto">
+                                                <select name="status_detail[]" class="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500" onchange="updateFinalJumlah(this)">
+                                                    <option value="disetujui" {{ ($detail->jumlah_disetujui ?? $detail->jumlah_diminta) > 0 ? 'selected' : '' }}>Disetujui</option>
+                                                    <option value="sebagian" {{ ($detail->jumlah_disetujui ?? $detail->jumlah_diminta) < $detail->jumlah_diminta && ($detail->jumlah_disetujui ?? $detail->jumlah_diminta) > 0 ? 'selected' : '' }}>Sebagian</option>
+                                                    <option value="ditolak">Ditolak</option>
+                                                </select>
                                             </td>
                                             <td class="p-3">
                                                 <span class="stok-setelah font-medium" data-stok-awal="{{ $detail->barang->stok }}">
@@ -297,12 +292,10 @@ function calculateStokSetelah(input) {
     const stokAwal = parseInt(input.dataset.stokAwal);
     const jumlahFinal = parseInt(input.value) || 0;
     const stokSetelah = stokAwal - jumlahFinal;
-    const jumlahDiminta = parseInt(row.querySelector('.status-display').dataset.jumlahDiminta);
-
-    // Update stock display
+    
     const stokSetelahSpan = row.querySelector('.stok-setelah');
     stokSetelahSpan.textContent = stokSetelah + ' ' + row.querySelector('td:nth-child(1) span').textContent.trim();
-
+    
     // Update color based on stock level
     if (stokSetelah <= 10) {
         stokSetelahSpan.className = 'stok-setelah font-medium text-red-600';
@@ -311,17 +304,25 @@ function calculateStokSetelah(input) {
     } else {
         stokSetelahSpan.className = 'stok-setelah font-medium text-green-600';
     }
+}
 
-    // Auto-update status display
-    const statusDisplay = row.querySelector('.status-display');
-    statusDisplay.innerHTML = '';
-    if (jumlahFinal == 0) {
-        statusDisplay.innerHTML = '<span class="bg-red-100 text-red-800">Ditolak</span>';
-    } else if (jumlahFinal < jumlahDiminta) {
-        statusDisplay.innerHTML = '<span class="bg-yellow-100 text-yellow-800">Sebagian</span>';
+function updateFinalJumlah(select) {
+    const row = select.closest('tr');
+    const jumlahInput = row.querySelector('input[name="jumlah_disetujui[]"]');
+    const jumlahDiminta = parseInt(row.querySelector('td:nth-child(3)').textContent);
+    
+    if (select.value === 'ditolak') {
+        jumlahInput.value = 0;
+    } else if (select.value === 'sebagian') {
+        // Keep current value or set to half if not set
+        if (!jumlahInput.value || jumlahInput.value > jumlahDiminta) {
+            jumlahInput.value = Math.floor(jumlahDiminta / 2);
+        }
     } else {
-        statusDisplay.innerHTML = '<span class="bg-green-100 text-green-800">Disetujui</span>';
+        jumlahInput.value = jumlahDiminta;
     }
+    
+    calculateStokSetelah(jumlahInput);
 }
 
 // Initialize calculations on page load

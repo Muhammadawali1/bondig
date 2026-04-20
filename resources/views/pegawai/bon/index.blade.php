@@ -88,6 +88,7 @@
                                     <th class="p-3 text-left">Kode Bon</th>
                                     <th class="p-3 text-left">Tanggal</th>
                                     <th class="p-3 text-left">Status</th>
+                                    <th class="p-3 text-left">Alasan Penolakan</th>
                                     <th class="p-3 text-left">Jumlah Item</th>
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
@@ -114,17 +115,19 @@
                                                         ✅ Disetujui
                                                     </span>
                                                     @break
-                                                @case('sebagian')
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                        ⚡ Sebagian Disetujui
-                                                    </span>
-                                                    @break
                                                 @case('ditolak')
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                         ❌ Ditolak
                                                     </span>
                                                     @break
                                             @endswitch
+                                        </td>
+                                        <td class="p-3">
+                                            @if($bon->status === 'ditolak' && $bon->alasan_penolakan)
+                                                <span class="text-red-600 text-xs">{{ $bon->alasan_penolakan }}</span>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
                                         </td>
                                         <td class="p-3">{{ $bon->details->count() }} item</td>
                                         <td class="p-3">

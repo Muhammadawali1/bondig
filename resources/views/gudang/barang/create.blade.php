@@ -66,6 +66,9 @@
                                 <option value="atk" {{ old('kategori') == 'atk' ? 'selected' : '' }}>ATK (Alat Tulis Kantor)</option>
                                 <option value="art" {{ old('kategori') == 'art' ? 'selected' : '' }}>ART (Alat Rumah Tangga)</option>
                                 <option value="tinta" {{ old('kategori') == 'tinta' ? 'selected' : '' }}>Tinta</option>
+                                <option value="pengharum_gsi" {{ old('kategori') == 'pengharum_gsi' ? 'selected' : '' }}> Pengharum GSI</option>
+                                <option value="cetakan" {{ old('kategori') == 'cetakan' ? 'selected' : '' }}> Cetakan</option>
+
                             </select>
                             @error('kategori')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -103,6 +106,7 @@
                                 <option value="pcs" {{ old('satuan') == 'pcs' ? 'selected' : '' }}>Pcs</option>
                                 <option value="pak" {{ old('satuan') == 'pak' ? 'selected' : '' }}>Pak</option>
                                 <option value="rim" {{ old('satuan') == 'rim' ? 'selected' : '' }}>Rim</option>
+                                <option value="Duz" {{ old('satuan') == 'Duz' ? 'selected' : '' }}>Duz</option>
                             </select>
                             @error('satuan')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

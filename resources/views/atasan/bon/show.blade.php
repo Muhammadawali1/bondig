@@ -57,6 +57,12 @@
                                 <p class="text-lg">{{ $bonBarang->keterangan }}</p>
                             </div>
                         @endif
+                        @if($bonBarang->status === 'ditolak' && $bonBarang->alasan_penolakan)
+                            <div class="md:col-span-3">
+                                <h3 class="text-sm font-medium text-red-600 mb-1">Alasan Penolakan</h3>
+                                <p class="text-lg text-red-700">{{ $bonBarang->alasan_penolakan }}</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -214,8 +220,29 @@
                         <div class="space-y-4">
                             @if($bonBarang->tanggal_atasan)
                                 <div class="flex items-start gap-3">
-                                    <div class="w-8 h-8 {{ $bonBarang->status === 'ditolak' ? 'bg-red-100' : 'bg-blue-100' }} rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 {{ $bonBarang->status === 'ditolak' ? 'text-red-600' : 'text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-8 h-8 {{ $bonBarang->status === 'ditolak' && !$bonBarang->tanggal_gudang ? 'bg-red-100' : 'bg-blue-100' }} rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 {{ $bonBarang->status === 'ditolak' && !$bonBarang->tanggal_gudang ? 'text-red-600' : 'text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            @if($bonBarang->status === 'ditolak' && !$bonBarang->tanggal_gudang)
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            @endif
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">{{ $bonBarang->status === 'ditolak' && !$bonBarang->tanggal_gudang ? 'Ditolak Atasan' : 'Disetujui Atasan' }}</p>
+                                        <p class="text-sm text-gray-500">{{ $bonBarang->tanggal_atasan->format('F Y') }}</p>
+                                        @if($bonBarang->status === 'ditolak' && !$bonBarang->tanggal_gudang && $bonBarang->alasan_penolakan)
+                                            <p class="text-sm text-red-600 mt-1">Alasan: {{ $bonBarang->alasan_penolakan }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            @if($bonBarang->tanggal_gudang)
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 {{ $bonBarang->status === 'ditolak' ? 'bg-red-100' : 'bg-green-100' }} rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 {{ $bonBarang->status === 'ditolak' ? 'text-red-600' : 'text-green-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             @if($bonBarang->status === 'ditolak')
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             @else
@@ -224,22 +251,11 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <p class="font-medium">{{ $bonBarang->status === 'ditolak' ? 'Ditolak Atasan' : 'Disetujui Atasan' }}</p>
-                                        <p class="text-sm text-gray-500">{{ $bonBarang->tanggal_atasan->format('F Y') }}</p>
-                                    </div>
-                                </div>
-                            @endif
-                            
-                            @if($bonBarang->tanggal_gudang)
-                                <div class="flex items-start gap-3">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium">Disetujui Gudang</p>
+                                        <p class="font-medium">{{ $bonBarang->status === 'ditolak' ? 'Ditolak Gudang' : 'Disetujui Gudang' }}</p>
                                         <p class="text-sm text-gray-500">{{ $bonBarang->tanggal_gudang->format('F Y') }}</p>
+                                        @if($bonBarang->status === 'ditolak' && $bonBarang->alasan_penolakan)
+                                            <p class="text-sm text-red-600 mt-1">Alasan: {{ $bonBarang->alasan_penolakan }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             @endif

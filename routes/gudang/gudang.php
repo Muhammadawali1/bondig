@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\gudang\BonBarangController;
+use App\Http\Controllers\gudang\BonMasukController;
 use App\Http\Controllers\gudang\BarangController;
 use App\Http\Controllers\ProfileController;
 
@@ -48,8 +49,24 @@ Route::middleware(['role:gudang', 'auth', 'user.active', 'sanitize', 'rate.limit
         ->name('bon.reject');
     Route::post('/bon-delete-all', [BonBarangController::class, 'deleteAll'])
         ->name('bon.delete-all');
+    Route::get('/bon/{id}/edit-detail/{detailId}', [BonBarangController::class, 'showEditDetail'])
+        ->name('bon.show-edit-detail');
+    Route::get('/bon/{id}/add-detail', [BonBarangController::class, 'showAddDetail'])
+        ->name('bon.show-add-detail');
     Route::post('/bon/{id}/edit-detail', [BonBarangController::class, 'editDetail'])
         ->name('bon.edit-detail');
     Route::post('/bon/{id}/add-detail', [BonBarangController::class, 'addDetail'])
         ->name('bon.add-detail');
+    Route::post('/bon/{id}/delete-detail', [BonBarangController::class, 'deleteDetail'])
+        ->name('bon.delete-detail');
+
+    // BON MASUK
+    Route::get('/bon-masuk', [BonMasukController::class, 'index'])
+        ->name('bon-masuk.index');
+    Route::get('/bon-masuk/create', [BonMasukController::class, 'create'])
+        ->name('bon-masuk.create');
+    Route::post('/bon-masuk', [BonMasukController::class, 'store'])
+        ->name('bon-masuk.store');
+    Route::get('/bon-masuk/{id}', [BonMasukController::class, 'show'])
+        ->name('bon-masuk.show');
 });

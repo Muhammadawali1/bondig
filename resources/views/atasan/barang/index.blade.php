@@ -52,6 +52,14 @@
                        class="px-3 py-1 rounded-full text-xs font-medium {{ request('kategori') == 'tinta' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                         Tinta
                     </a>
+                    <a href="{{ route('atasan.barang.index') }}?kategori=pengharum_gsi" 
+                       class="px-3 py-1 rounded-full text-xs font-medium {{ request('kategori') == 'pengharum_gsi' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                        Pengharum GSI
+                    </a>
+                    <a href="{{ route('atasan.barang.index') }}?kategori=cetakan" 
+                       class="px-3 py-1 rounded-full text-xs font-medium {{ request('kategori') == 'cetakan' ? 'bg-teal-100 text-teal-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                        Cetakan
+                    </a>
                 </div>
             </div>
 
@@ -98,6 +106,12 @@
                                             @break
                                         @case('tinta')
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Tinta</span>
+                                            @break
+                                        @case('pengharum_gsi')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">Pengharum GSI</span>
+                                            @break
+                                        @case('cetakan')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800">Cetakan</span>
                                             @break
                                         @default
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ $barang->kategori }}</span>

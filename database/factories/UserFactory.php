@@ -18,14 +18,12 @@ class UserFactory extends Factory
 
     /**
      * Define the model's default state.
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            'name' => 'Test User',
-            'nip' => rand(10000000, 99999999),
+            'name' => fake()->name(),
+            'nip' => fake()->unique()->numerify('########'), // 🔥 generate NIP 8 digit
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];

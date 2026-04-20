@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('password_change_requests', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->change();
+            $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending')->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('password_change_requests', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'approved', 'rejected'])->change();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->change();
         });
     }
 };

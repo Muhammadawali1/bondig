@@ -83,7 +83,16 @@
                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
                     </path>
                 </svg>
-                Bon Barang
+                Approval Bon Barang
+            </a>
+
+ <a href="{{ route('gudang.bon-masuk.index') }}"
+                class="flex items-center px-4 py-3 text-sm font-medium rounded-lg {{ request()->is('gudang/bon-masuk*') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                </svg>
+                Bon Masuk
             </a>
 
             <a href="{{ route('gudang.bon.history') }}"
@@ -94,6 +103,8 @@
                 </svg>
                 History Bon
             </a>
+
+           
 
             @elseif(auth()->user()->role === 'administrator')
             <!-- Administrator Menu -->

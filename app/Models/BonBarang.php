@@ -15,8 +15,10 @@ class BonBarang extends Model
         'kode_bon',
         'pegawai_id',
         'divisi',
+        'tahun',
         'status',
         'keterangan',
+        'alasan_penolakan',
         'tanggal_pengajuan',
         'tanggal_atasan',
         'tanggal_gudang',
@@ -38,14 +40,17 @@ class BonBarang extends Model
         return $this->hasMany(BonBarangDetail::class);
     }
 
-    public static function generateKodeBon()
+    public static function generateKodeBon($year = null)
     {
-        // Cari semua bon yang memiliki kode bon
+        $currentYear = $year ?? date('Y');
+        
+        // Cari bon yang memiliki kode bon di tahun yang sama
         $bonsWithKode = self::whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
+            ->where('tahun', $currentYear)
             ->get();
         
-        // Extract nomor urut dari semua kode bon yang ada
+        // Extract nomor urut dari semua kode bon yang ada di tahun ini
         $sequences = [];
         foreach ($bonsWithKode as $bon) {
             // Extract angka dari kode bon (AT-01, AT-02, dll)
@@ -55,7 +60,7 @@ class BonBarang extends Model
             }
         }
         
-        // Cari nomor urut tertinggi
+        // Cari nomor urut tertinggi untuk tahun ini
         $lastSequence = !empty($sequences) ? max($sequences) : 0;
         $sequence = $lastSequence + 1;
         

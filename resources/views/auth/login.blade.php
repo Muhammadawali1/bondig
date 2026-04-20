@@ -213,8 +213,9 @@ function togglePassword(fieldId, button) {
 
 function refreshCaptcha(id = 'captcha-img') {
     const captcha = document.getElementById(id);
-    captcha.src = "{{ captcha_src('flat') }}" + '?' + Date.now();
+    captcha.src = "{{ captcha_src() }}" + '?' + Date.now();
 }
 </script>
 
 </html>
+

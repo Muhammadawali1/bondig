@@ -25,22 +25,22 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function history(Request $request)
     {
         $query = BonBarang::with(['details.barang', 'pegawai'])
-            ->whereIn('status', ['disetujui', 'sebagian'])
+            ->where('status', 'disetujui')
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '');
-
+        
         // Filter berdasarkan kategori
         if ($request->has('category') && $request->category === 'disetujui') {
             $query->where('status', 'disetujui');
         }
-
+        
         // Filter berdasarkan bulan
         if ($request->has('bulan') && $request->bulan) {
             $query->whereMonth('tanggal_pengajuan', $request->bulan);
         }
-
+        
         $bonBarangs = $query->orderByRaw("CAST(SUBSTRING(kode_bon, 4) AS UNSIGNED) DESC")->get();
-
+        
         // Check if 'semua' category is requested
         if ($request->has('category') && $request->category === 'semua') {
             // Return flattened data for 'semua' category
@@ -49,7 +49,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
             // Default: group by divisi for other categories
             $bonBarangs = $bonBarangs->groupBy('divisi');
         }
-
+        
         return view('gudang.bon.history', compact('bonBarangs'));
     }
 
@@ -65,11 +65,11 @@ class BonBarangController extends \App\Http\Controllers\Controller
     public function showHistory($id)
     {
         $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
-            ->whereIn('status', ['disetujui', 'sebagian'])
+            ->where('status', 'disetujui')
             ->whereNotNull('kode_bon')
             ->where('kode_bon', '!=', '')
             ->findOrFail($id);
-
+        
         return view('gudang.bon.show-history', compact('bonBarang'));
     }
 
@@ -86,6 +86,8 @@ class BonBarangController extends \App\Http\Controllers\Controller
             'detail_id.*' => 'exists:bon_barang_details,id',
             'jumlah_disetujui' => 'required|array',
             'jumlah_disetujui.*' => 'required|integer|min:0',
+            'status_detail' => 'required|array',
+            'status_detail.*' => 'required|in:disetujui,sebagian,ditolak',
             'catatan' => 'nullable|array',
             'catatan.*' => 'nullable|string|max:255'
         ]);
@@ -95,35 +97,21 @@ class BonBarangController extends \App\Http\Controllers\Controller
         DB::beginTransaction();
         try {
             // Update bon details and barang stock
-            $hasSebagian = false;
-            $hasDisetujui = false;
             foreach ($request->detail_id as $index => $detailId) {
                 $detail = BonBarangDetail::find($detailId);
                 if ($detail) {
                     $barang = Barang::find($detail->barang_id);
-                    $jumlahFinal = $request->jumlah_disetujui[$index];
-                    $jumlahDiminta = $detail->jumlah_diminta;
-
-                    // Auto-determine status_detail based on comparison
-                    if ($jumlahFinal == 0) {
-                        $autoStatus = 'ditolak';
-                    } elseif ($jumlahFinal < $jumlahDiminta) {
-                        $autoStatus = 'sebagian';
-                        $hasSebagian = true;
-                    } else {
-                        $autoStatus = 'disetujui';
-                        $hasDisetujui = true;
-                    }
-
-                    // Update bon detail with auto status
+                    $jumlahFinal = $request->jumlah_disetujui[$index]; // Perbaiki nama field
+                    
+                    // Update bon detail
                     $detail->update([
                         'jumlah_disetujui' => $jumlahFinal,
-                        'status_detail' => $autoStatus,
+                        'status_detail' => $request->status_detail[$index],
                         'catatan' => $request->catatan[$index] ?? null,
                     ]);
-
-                    // Update barang stock if approved or partial
-                    if (($autoStatus === 'disetujui' || $autoStatus === 'sebagian') && $jumlahFinal > 0) {
+                    
+                    // Update barang stock if approved
+                    if ($request->status_detail[$index] === 'disetujui' && $jumlahFinal > 0) {
                         $barang->update([
                             'stok' => $barang->stok - $jumlahFinal
                         ]);
@@ -131,16 +119,10 @@ class BonBarangController extends \App\Http\Controllers\Controller
                 }
             }
 
-            // Determine bon status based on detail statuses
-            $finalStatus = 'disetujui';
-            if ($hasSebagian) {
-                $finalStatus = 'sebagian';
-            }
-
-            // Update bon status dan generate kode bon
+            // Update bon status dan generate kode bon (final approval)
             $bonBarang->update([
-                'kode_bon' => BonBarang::generateKodeBon(),
-                'status' => $finalStatus,
+                'kode_bon' => BonBarang::generateKodeBon($bonBarang->tahun),
+                'status' => 'disetujui',
                 'tanggal_gudang' => now(),
             ]);
 
@@ -183,8 +165,12 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
         DB::beginTransaction();
         try {
+            // Update all detail statuses to 'ditolak'
+            $bonBarang->details()->update(['status_detail' => 'ditolak']);
+
             $bonBarang->update([
                 'status' => 'ditolak',
+                'alasan_penolakan' => $request->alasan_penolakan,
                 'tanggal_gudang' => now(),
             ]);
 
@@ -207,41 +193,78 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->with('success', 'Bon barang ditolak!');
     }
 
-    public function deleteAll()
+    public function deleteAll(Request $request)
     {
-        \Log::info('Delete All Bon - Start');
+        $request->validate([
+            'tahun' => 'required|integer|min:2020|max:2100'
+        ]);
+
+        $tahun = $request->tahun;
+        \Log::info('Delete Bon By Year - Start', ['year' => $tahun]);
 
         DB::beginTransaction();
         try {
-            // Get all bon records
-            $bonBarangs = BonBarang::all();
-            \Log::info('Delete All Bon - Found ' . $bonBarangs->count() . ' bon records');
+            // Get bon records for the specified year
+            $bonBarangs = BonBarang::whereYear('tanggal_pengajuan', $tahun)->get();
+            \Log::info('Delete Bon By Year - Found ' . $bonBarangs->count() . ' bon records for year ' . $tahun);
 
-            // Delete all bon details first (to handle foreign key constraints)
+            if ($bonBarangs->count() === 0) {
+                return redirect()->route('gudang.bon.history')
+                    ->with('error', 'Tidak ada bon barang pada tahun ' . $tahun);
+            }
+
+            // Delete bon details first (to handle foreign key constraints)
             foreach ($bonBarangs as $bon) {
                 $bon->details()->delete();
             }
-            \Log::info('Delete All Bon - Deleted all bon details');
+            \Log::info('Delete Bon By Year - Deleted all bon details for year ' . $tahun);
 
-            // Delete all bon records using delete() instead of truncate to avoid foreign key constraint
-            BonBarang::query()->delete();
-            \Log::info('Delete All Bon - Deleted all bon records');
+            // Delete bon records for the specified year
+            BonBarang::whereYear('tanggal_pengajuan', $tahun)->delete();
+            \Log::info('Delete Bon By Year - Deleted all bon records for year ' . $tahun);
 
             DB::commit();
-            \Log::info('Delete All Bon - Transaction committed');
+            \Log::info('Delete Bon By Year - Transaction committed');
 
             return redirect()->route('gudang.bon.history')
-                ->with('success', 'Semua bon barang berhasil dihapus dari database! Total: ' . $bonBarangs->count() . ' bon');
+                ->with('success', 'Semua bon barang tahun ' . $tahun . ' berhasil dihapus dari database! Total: ' . $bonBarangs->count() . ' bon');
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Delete All Bon Error', [
+            \Log::error('Delete Bon By Year Error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
             return redirect()->route('gudang.bon.history')
-                ->with('error', 'Gagal menghapus semua bon barang. Error: ' . $e->getMessage());
+                ->with('error', 'Gagal menghapus bon barang tahun ' . $tahun . '. Error: ' . $e->getMessage());
         }
+    }
+
+    public function showEditDetail($bonId, $detailId)
+    {
+        $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
+            ->where('status', 'disetujui')
+            ->whereNotNull('kode_bon')
+            ->where('kode_bon', '!=', '')
+            ->findOrFail($bonId);
+        
+        $detail = BonBarangDetail::with('barang')->findOrFail($detailId);
+        
+        return view('gudang.bon.edit-detail', compact('bonBarang', 'detail'));
+    }
+
+    public function showAddDetail($bonId)
+    {
+        $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
+            ->where('status', 'disetujui')
+            ->whereNotNull('kode_bon')
+            ->where('kode_bon', '!=', '')
+            ->findOrFail($bonId);
+        
+        $existingBarangIds = $bonBarang->details->pluck('barang_id')->toArray();
+        $allBarangs = \App\Models\Barang::whereNotIn('id', $existingBarangIds)->get();
+        
+        return view('gudang.bon.add-detail', compact('bonBarang', 'allBarangs'));
     }
 
     public function editDetail(Request $request, $bonId)
@@ -254,19 +277,40 @@ class BonBarangController extends \App\Http\Controllers\Controller
         ]);
 
         $detail = BonBarangDetail::findOrFail($request->detail_id);
+        $barang = Barang::findOrFail($detail->barang_id);
 
         DB::beginTransaction();
         try {
+            // Calculate stock difference
+            $oldJumlah = $detail->jumlah_disetujui;
+            $newJumlah = $request->jumlah_disetujui;
+            $difference = $newJumlah - $oldJumlah;
+
+            // Update bon detail
             $detail->update([
                 'jumlah_disetujui' => $request->jumlah_disetujui,
                 'status_detail' => $request->status_detail,
                 'catatan' => $request->catatan
             ]);
 
+            // Adjust stock based on difference
+            // If new amount > old amount, deduct more from stock
+            // If new amount < old amount, add back to stock
+            if ($request->status_detail === 'disetujui') {
+                $barang->update([
+                    'stok' => $barang->stok - $difference
+                ]);
+            } elseif ($request->status_detail === 'ditolak' && $oldJumlah > 0) {
+                // If changing from approved to rejected, add back all stock
+                $barang->update([
+                    'stok' => $barang->stok + $oldJumlah
+                ]);
+            }
+
             DB::commit();
 
             return redirect()->route('gudang.bon.show-history', $bonId)
-                ->with('success', 'Detail barang berhasil diupdate!');
+                ->with('success', 'Detail barang berhasil diupdate dan stok telah disesuaikan!');
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Edit Detail Error', [
@@ -276,6 +320,41 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
             return redirect()->route('gudang.bon.show-history', $bonId)
                 ->with('error', 'Gagal mengupdate detail barang.');
+        }
+    }
+
+    public function deleteDetail(Request $request, $bonId)
+    {
+        $request->validate([
+            'detail_id' => 'required|exists:bon_barang_details,id'
+        ]);
+
+        $detail = BonBarangDetail::findOrFail($request->detail_id);
+        $barang = Barang::findOrFail($detail->barang_id);
+
+        DB::beginTransaction();
+        try {
+            // Restore stock since this item is being removed from an approved bon
+            $barang->update([
+                'stok' => $barang->stok + $detail->jumlah_disetujui
+            ]);
+
+            // Delete the detail
+            $detail->delete();
+
+            DB::commit();
+
+            return redirect()->route('gudang.bon.show-history', $bonId)
+                ->with('success', 'Barang berhasil dihapus dan stok telah dikembalikan!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Delete Detail Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('gudang.bon.show-history', $bonId)
+                ->with('error', 'Gagal menghapus barang.');
         }
     }
 
@@ -292,6 +371,7 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
         DB::beginTransaction();
         try {
+            // Create new bon detail
             BonBarangDetail::create([
                 'bon_barang_id' => $bonBarang->id,
                 'barang_id' => $request->barang_id,
@@ -301,10 +381,15 @@ class BonBarangController extends \App\Http\Controllers\Controller
                 'catatan' => $request->catatan
             ]);
 
+            // Deduct stock since this is being added to an approved bon
+            $barang->update([
+                'stok' => $barang->stok - $request->jumlah
+            ]);
+
             DB::commit();
 
             return redirect()->route('gudang.bon.show-history', $bonId)
-                ->with('success', 'Barang berhasil ditambahkan ke bon!');
+                ->with('success', 'Barang berhasil ditambahkan ke bon dan stok telah dikurangi!');
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Add Detail Error', [
