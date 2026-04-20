@@ -18,11 +18,5 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserDivisiSeeder::class,
         ]);
-
-        User::factory()->create([
-            'name' => 'Admin',
-            'nip' => '0001',
-            
-        ]);
     }
 }
