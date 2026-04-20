@@ -96,12 +96,15 @@ class BonBarangController extends \App\Http\Controllers\Controller
 
         DB::beginTransaction();
         try {
-            // Check if any details have partial approval
+            // Check if any details have partial approval or if all are rejected
             $hasPartialApproval = false;
+            $allRejected = true;
             foreach ($request->status_detail as $status) {
                 if ($status === 'sebagian') {
                     $hasPartialApproval = true;
-                    break;
+                    $allRejected = false;
+                } elseif ($status === 'disetujui') {
+                    $allRejected = false;
                 }
             }
 
@@ -128,13 +131,21 @@ class BonBarangController extends \App\Http\Controllers\Controller
                 }
             }
 
-            // Update bon status dan generate kode bon (final approval)
-            $bonStatus = $hasPartialApproval ? 'disetujui_sebagian' : 'disetujui';
-            $bonBarang->update([
-                'kode_bon' => BonBarang::generateKodeBon($bonBarang->tahun),
-                'status' => $bonStatus,
-                'tanggal_gudang' => now(),
-            ]);
+            // Update bon status dan generate kode bon (only if not all rejected)
+            if ($allRejected) {
+                $bonStatus = 'ditolak';
+                $bonBarang->update([
+                    'status' => $bonStatus,
+                    'tanggal_gudang' => now(),
+                ]);
+            } else {
+                $bonStatus = $hasPartialApproval ? 'disetujui_sebagian' : 'disetujui';
+                $bonBarang->update([
+                    'kode_bon' => BonBarang::generateKodeBon($bonBarang->tahun),
+                    'status' => $bonStatus,
+                    'tanggal_gudang' => now(),
+                ]);
+            }
 
             // Kirim notifikasi ke pegawai dan atasan berdasarkan status
             if ($hasPartialApproval) {

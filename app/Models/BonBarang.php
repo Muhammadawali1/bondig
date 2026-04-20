@@ -44,23 +44,42 @@ class BonBarang extends Model
     {
         $currentYear = $year ?? date('Y');
         
-        // Get the last sequence number for this year using a database lock
-        $lastBon = self::whereNotNull('kode_bon')
-            ->where('kode_bon', '!=', '')
-            ->where('tahun', $currentYear)
-            ->lockForUpdate()
-            ->orderByRaw("CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC")
-            ->first();
-        
-        if ($lastBon) {
-            // Extract the sequence number from the last code
-            $parts = explode('-', $lastBon->kode_bon);
-            $lastSequence = intval(end($parts));
-            $sequence = $lastSequence + 1;
-        } else {
-            $sequence = 1;
+        // Retry mechanism to ensure unique code
+        $maxRetries = 5;
+        for ($i = 0; $i < $maxRetries; $i++) {
+            // Use raw SQL with FOR UPDATE to ensure atomic operation
+            $lastSequence = \DB::selectOne("
+                SELECT CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) as sequence
+                FROM bon_barangs
+                WHERE kode_bon IS NOT NULL
+                AND kode_bon != ''
+                AND tahun = ?
+                ORDER BY CAST(SUBSTRING_INDEX(kode_bon, '-', -1) AS UNSIGNED) DESC
+                LIMIT 1
+                FOR UPDATE
+            ", [$currentYear]);
+            
+            if ($lastSequence && $lastSequence->sequence) {
+                $sequence = $lastSequence->sequence + 1;
+            } else {
+                $sequence = 1;
+            }
+            
+            $newCode = 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+            
+            // Check if this code already exists (in case of race condition)
+            $exists = self::where('kode_bon', $newCode)
+                ->where('tahun', $currentYear)
+                ->exists();
+            
+            if (!$exists) {
+                return $newCode;
+            }
+            
+            // If code exists, retry with next iteration
         }
         
-        return 'AT-' . str_pad($sequence, 2, '0', STR_PAD_LEFT);
+        // If all retries failed, throw exception
+        throw new \Exception('Failed to generate unique bon code after ' . $maxRetries . ' retries');
     }
 }
