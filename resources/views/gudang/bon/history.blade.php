@@ -89,7 +89,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
@@ -100,7 +100,23 @@
                         <div class="ml-4">
                             <p class="text-sm text-gray-500">Total Disetujui</p>
                             <p class="text-2xl font-semibold text-gray-900 stat-disetujui">
-                                {{ $bonBarangs->flatten()->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count() }}
+                                {{ $bonBarangs->flatten()->where('status', 'disetujui')->count() }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-500">Total Disetujui Sebagian</p>
+                            <p class="text-2xl font-semibold text-gray-900 stat-disetujui-sebagian">
+                                {{ $bonBarangs->flatten()->where('status', 'disetujui_sebagian')->count() }}
                             </p>
                         </div>
                     </div>
@@ -152,7 +168,10 @@
                                 </h3>
                                 <div class="mt-2 flex gap-4 text-sm">
     <span class="text-green-600 stat-divisi-disetujui">
-        ✅ Disetujui: {{ $bons->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count() }}
+        ✅ Disetujui: {{ $bons->where('status', 'disetujui')->count() }}
+    </span>
+    <span class="text-yellow-600 stat-divisi-disetujui-sebagian">
+        ⚠️ Disetujui Sebagian: {{ $bons->where('status', 'disetujui_sebagian')->count() }}
     </span>
 </div>
                             </div>
