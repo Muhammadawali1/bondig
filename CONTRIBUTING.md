@@ -1,21 +1,21 @@
-# Contributing to Sistem Manajemen Bon Barang
+# Kontribusi ke Sistem Manajemen Bon Barang
 
-Terima kasih atas ketertarikan Anda untuk berkontribusi pada project ini! Berikut adalah panduan untuk berkontribusi:
+Makasih ya mau kontribusi ke project ini! Ini panduan singkat buat yang mau bantu develop:
 
-## Cara Berkontribusi
+## Cara Kontribusi
 
-### 1. Fork Repository
-- Fork repository ini ke akun GitHub Anda
-- Clone fork Anda ke local machine
+### 1. Fork Repository Dulu
+- Fork repo ini ke GitHub kamu
+- Clone fork ke laptop/komputer kamu
 
-### 2. Setup Development Environment
+### 2. Setup Environment
 ```bash
-# Clone fork Anda
+# Clone repo kamu
 git clone https://github.com/USERNAME/bonn-dig-final-bos.git
 cd bonn-dig-final-bos
 
-# Setup remote untuk tracking upstream
-git remote add upstream https://github.com/ORIGINAL_OWNER/bonn-dig-final-bos.git
+# Setup remote buat tracking upstream
+git remote add upstream https://github.com/Muhammadawali1/bondig.git
 
 # Install dependencies
 composer install
@@ -30,86 +30,86 @@ php artisan db:seed
 
 ### 3. Buat Branch Baru
 ```bash
-# Buat branch untuk fitur baru
+# Buat branch buat fitur baru
 git checkout -b feature/nama-fitur
 
-# Atau untuk bug fix
-git checkout -b fix/deskripsi-bug
+# Atau buat bug fix
+git checkout -b fix/bug-yang-diperbaiki
 ```
 
 ### 4. Lakukan Perubahan
-- Ikuti coding standards yang ada
-- Test perubahan Anda
-- Pastikan semua tests pass
+- Ikutin coding style yang udah ada
+- Test fitur yang kamu buat
+- Pastikan ga ada yang error
 
 ### 5. Commit Changes
 ```bash
-# Add changes
+# Add semua perubahan
 git add .
 
 # Commit dengan pesan yang jelas
-git commit -m "feat: tambahkan fitur export ke PDF"
+git commit -m "feat: tambah export PDF"
 ```
 
-### 6. Push dan Pull Request
+### 6. Push & Pull Request
 ```bash
-# Push ke fork Anda
+# Push ke repo kamu
 git push origin feature/nama-fitur
 
-# Buat Pull Request ke repository utama
+# Buat Pull Request ke repo utama
 ```
 
-## Coding Standards
+## Coding Style
 
 ### PHP/Laravel
-- Ikuti PSR-12 coding standards
-- Gunakan meaningful variable names
-- Add comments untuk complex logic
-- Follow Laravel best practices
+- Ikutin PSR-12 standards (biar rapih)
+- Pake nama variable yang jelas
+- Add comment buat logic yang rumit
+- Ikutin best practices Laravel
 
 ### JavaScript
-- Gunakan modern ES6+ syntax
-- Add JSDoc comments untuk functions
-- Minimize global variables
+- Pake ES6+ syntax (modern)
+- Add comment buat function penting
+- Jangan banyak pake global variable
 
 ### Blade Templates
-- Gunakan component-based approach
-- Keep logic minimal di templates
-- Use proper HTML structure
+- Pake component-based approach
+- Logic di template jangan terlalu banyak
+- HTML structure yang bener
 
 ## Testing
-- Pastikan semua existing tests masih pass
-- Add tests untuk fitur baru
-- Test di multiple browsers jika relevant
+- Pastikan semua tests masih jalan
+- Add tests buat fitur baru
+- Test di beberapa browser kalo perlu
 
 ## Pull Request Guidelines
 
-### PR Title Format
-- `feat:` untuk fitur baru
-- `fix:` untuk bug fixes
-- `docs:` untuk dokumentasi
-- `style:` untuk formatting
-- `refactor:` untuk refactoring
-- `test:` untuk tests
+### Format Title PR
+- `feat:` buat fitur baru
+- `fix:` buat bug fixes
+- `docs:` buat dokumentasi
+- `style:` buat formatting
+- `refactor:` buat refactoring
+- `test:` buat tests
 
-### PR Description
-- Deskripsi singkat perubahan
-- Screenshots jika UI changes
-- Testing instructions
-- Related issues
+### Description PR
+- Jelaskan singkat perubahan kamu
+- Screenshot kalo ada perubahan UI
+- Cara testing fiturnya
+- Issue yang berhubungan (kalo ada)
 
-## Code Review Process
-1. Automated checks harus pass
-2. Manual review oleh maintainer
-3. Feedback akan diberikan
+## Review Process
+1. Automated checks harus lolos
+2. Manual review sama maintainer
+3. Feedback bakal dikasih
 4. Update berdasarkan feedback
-5. Approval dan merge
+5. Approve & merge
 
-## Questions?
-Jika ada pertanyaan, silakan:
-- Buat issue di repository
-- Contact maintainer
+## Ada Pertanyaan?
+Kalo ada yang mau ditanya:
+- Buat issue di repo
+- Contact saya langsung
 - Join discussion channels
 
 ## License
-Dengan berkontribusi, Anda setuju bahwa kontribusi Anda akan dilisensikan under MIT License.
+Dengan kontribusi, kamu setuju bahwa kontribusinya bakal dilisensikan under MIT License.

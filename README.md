@@ -1,155 +1,169 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="200" alt="Laravel Logo">
-  <h1 align="center">Sistem Manajemen Bon Barang</h1>
-  <p align="center">Aplikasi Web-Based untuk Manajemen Permintaan dan Persetujuan Barang</p>
-</p>
+# Sistem Manajemen Bon Barang
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Laravel-12.0-red.svg" alt="Laravel">
-  <img src="https://img.shields.io/badge/PHP-8.2+-blue.svg" alt="PHP">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
-</p>
+Aplikasi web untuk mengelola permintaan barang di kantor/organisasi. Dari pengajuan pegawai sampai ke gudang, semuanya digital!
 
-## Tentang Project
+![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)
+![Laravel](https://img.shields.io/badge/Laravel-12.0-red.svg)
+![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Sistem Manajemen Bon Barang adalah aplikasi web berbasis Laravel yang dirancang untuk mengotomatiskan dan menyederhanakan proses permintaan barang dalam organisasi. Sistem ini memfasilitasi alur kerja dari pengajuan permintaan oleh pegawai hingga persetujuan multi-level dan pemenuhan oleh gudang.
+## Apa ini?
+
+Ini adalah aplikasi yang saya buat untuk ngurusin permintaan barang di kantor. Jadi pegawai bisa minta barang lewat web, atasan approve, terus gudang yang proses. Semua digital, ga pake kertas lagi!
 
 ## Fitur Utama
 
-### **Multi-Level Approval Workflow**
-- Pegawai mengajukan permintaan barang
-- Atasan melakukan persetujuan awal
-- Gudang melakukan verifikasi stok dan pemenuhan
-- Administrator monitoring dan oversight
+### **Alur Kerja yang Simple**
+- Pegawai ajukan permintaan barang (lebih praktis dari ngisi form)
+- Atasan approve/reject (bisa dari HP)
+- Gudang cek stok & kasih barang (otomatis kurangin stok)
+- Admin bisa monitoring semua (buat laporan dll)
 
-### **Role-Based Access Control**
-- **Administrator**: Manajemen sistem, monitoring, laporan
-- **Atasan**: Persetujuan permintaan, monitoring tim
-- **Gudang**: Manajemen stok, pemenuhan permintaan
-- **Pegawai**: Pengajuan permintaan, tracking status
+### **Akses Sesuai Peran**
+- **Admin**: Ngurusin sistem, lihat data, buat laporan
+- **Atasan**: Approve request, lihat progress timnya
+- **Gudang**: Kelola stok, kasih barang ke pegawai
+- **Pegawai**: Ajukan permintaan, liat statusnya
 
-### **Manajemen Inventaris**
-- Real-time stock tracking
-- Automatic stock deduction
-- Barang management dengan kategori
-- History dan audit trail lengkap
+### **Ngurusin Stok Barang**
+- Stok update otomatis (kalo ada yang keluar)
+- Input data barang dengan kategori
+- History semua transaksi (buat audit)
+- Laporan stok kapan aja bisa diliat
 
-### **Notifikasi Real-Time**
-- Email notifications untuk setiap status update
-- Dashboard notifications
-- Status tracking untuk semua stakeholder
+### **Notifikasi Otomatis**
+- Email kalo ada update status request
+- Notifikasi di dashboard
+- Semua yang terlibat tau statusnya
 
-### **Reporting & Analytics**
-- Laporan permintaan per periode
+### **Laporan & Data**
+- Laporan permintaan per bulan/tahun
 - Statistik per departemen
-- Export data ke Excel
-- Visual dashboard
+- Export ke Excel (buat reporting ke bos)
+- Dashboard yang gampang dimengerti
 
-## Teknologi
+## Tech Stack yang Dipake
 
 ### **Backend**
-- **Framework**: Laravel 12.0
-- **Language**: PHP 8.2+
-- **Database**: MySQL/MariaDB
-- **Authentication**: Laravel Sanctum
+- **Framework**: Laravel 12.0 (yang terbaru)
+- **Language**: PHP 8.2+ (modern)
+- **Database**: MySQL/MariaDB (reliable)
+- **Authentication**: Laravel bawaan (sudah aman)
 
 ### **Frontend**
-- **Template Engine**: Blade
-- **CSS Framework**: Bootstrap 5
-- **JavaScript**: Vanilla JS + jQuery
-- **Build Tool**: Vite
+- **Template**: Blade (Laravel native)
+- **CSS**: Bootstrap 5 (responsive & clean)
+- **JavaScript**: Vanilla JS + jQuery (simple & effective)
+- **Build Tool**: Vite (fast development)
 
-### **Additional Packages**
-- `maatwebsite/excel` - Export/Import Excel
-- `mews/captcha` - Security verification
-- `ext-gd` - Image processing
+### **Package Tambahan**
+- `maatwebsite/excel` - Buat export ke Excel
+- `mews/captcha` - Biar aman dari bot
+- `ext-gd` - Buat gambar/captcha
 
-## Instalasi
+## Cara Install
 
-### **Requirements**
-- PHP 8.2 atau lebih tinggi
-- Composer
-- MySQL/MariaDB
-- Node.js & NPM
+### **Yang Harus Disiapkan**
+- PHP 8.2+ (yang penting)
+- Composer (untuk PHP packages)
+- MySQL/MariaDB (database)
+- Node.js & NPM (buat frontend)
 
-### **Setup Instructions**
+### **Langkah-langkahnya**
 ```bash
-# Clone repository
-git clone <repository-url>
+# Clone projectnya
+git clone https://github.com/Muhammadawali1/bondig.git
 cd bonn-dig-final-bos
 
 # Install dependencies
 composer install
 npm install
 
-# Environment setup
+# Setup environment
 cp .env.example .env
 php artisan key:generate
+# Edit .env sesuai database kamu
 
 # Database setup
 php artisan migrate
 php artisan db:seed
 
-# Build assets
+# Build frontend
 npm run build
 
-# Start development server
+# Jalin aplikasi
 php artisan serve
+# Buka http://localhost:8000
 ```
 
-## Struktur Database
+## Database Structure
 
-### **Core Tables**
-- `users` - Manajemen pengguna
-- `divisis` - Data departemen
+### **Table Utama**
+- `users` - Data user (pegawai, admin, dll)
+- `divisis` - Divisi/departemen
 - `barangs` - Master data barang
-- `bon_barangs` - Header permintaan
-- `bon_barang_details` - Detail permintaan
-- `notifikasis` - System notifications
+- `bon_barangs` - Header permintaan barang
+- `bon_barang_details` - Detail barang yang diminta
+- `notifikasis` - Notifikasi sistem
 
 ## Screenshots
 
-*(Add screenshots of the application here)*
+*(Nanti tambahin screenshot aplikasinya)*
 
-## Deployment
+![Dashboard](https://via.placeholder.com/800x400?text=Dashboard+Screenshot)
+![Request Form](https://via.placeholder.com/800x400?text=Request+Form)
 
-### **Production Deployment**
+## Cara Deploy
+
+### **Untuk Production**
 ```bash
-# Optimize for production
+# Optimize biar cepat
 composer install --optimize-autoloader --no-dev
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Set environment variables
+# Set environment
 APP_ENV=production
 APP_DEBUG=false
 ```
 
-### **Docker Support**
-- Dockerfile included for containerization
-- Ready for cloud deployment (Railway, Heroku, etc.)
+### **Cloud Deployment**
+- Sudah ada config untuk Railway (nixpacks.toml)
+- Bisa juga deploy ke Heroku, Vercel, dll
+- Database bisa pake MySQL, PostgreSQL, atau SQLite
 
-## Kontribusi
+## Mau Kontribusi?
 
-1. Fork repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+Boleh banget! Caranya:
+1. Fork repository ini
+2. Buat branch baru (`git checkout -b fitur-baru`)
+3. Commit perubahan (`git commit -m 'Tambah fitur keren'`)
+4. Push ke branch kamu (`git push origin fitur-baru`)
+5. Buat Pull Request
+
+Detailnya ada di [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## License
 
-Project ini dilisensikan under MIT License - lihat file [LICENSE](LICENSE) untuk detail.
+Project ini pake MIT License. Bebas dipake, dimodif, dll. Cek file [LICENSE](LICENSE) ya.
 
-## Contact
+## Hubungi Saya
 
-- **Developer**: [Your Name]
-- **Email**: [your.email@example.com]
-- **LinkedIn**: [Your LinkedIn Profile]
+- **GitHub**: [Muhammadawali1](https://github.com/Muhammadawali1)
+- **Email**: muhammadawali@example.com
+- **LinkedIn**: [LinkedIn Profile](https://linkedin.com/in/muhammad-awali)
 
 ---
+
+### Kenapa Laravel?
+
+Saya pilih Laravel karena:
+- Dokumentasi lengkap
+- Community besar
+- Fitur ORM yang powerful
+- Security bawaan
+- Mudah dipelajari
 
 ## About Laravel
 
