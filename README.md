@@ -115,7 +115,7 @@ Berikut adalah tampilan aplikasi Sistem Manajemen Bon Barang:
 *Dashboard untuk monitoring permintaan barang real-time*
 
 ### Form Pengajuan Barang
-![Request Form](docs/images/request-form.png)
+![Request Form](docs/images/approval.png)
 *Form pengajuan barang yang user-friendly dan intuitif*
 
 ### History & Tracking
