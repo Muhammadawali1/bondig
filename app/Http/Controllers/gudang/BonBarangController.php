@@ -86,8 +86,6 @@ class BonBarangController extends \App\Http\Controllers\Controller
             'detail_id.*' => 'exists:bon_barang_details,id',
             'jumlah_disetujui' => 'required|array',
             'jumlah_disetujui.*' => 'required|integer|min:0',
-            'status_detail' => 'required|array',
-            'status_detail.*' => 'required|in:disetujui,sebagian,ditolak',
             'catatan' => 'nullable|array',
             'catatan.*' => 'nullable|string|max:255'
         ]);
