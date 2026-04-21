@@ -122,6 +122,17 @@ Berikut adalah tampilan aplikasi Sistem Manajemen Bon Barang:
 ![History](docs/images/history.png)
 *History permintaan barang dan tracking status*
 
+## Demo Full
+
+Lihat demo lengkap aplikasi Sistem Manajemen Bon Barang melalui Google Drive berikut:
+
+🔗 [**Demo Full Aplikasi**](https://drive.google.com/drive/folders/1JlIFTqPHwExlsERmesnsF-mu44ePTJhO?usp=sharing)
+
+Folder ini berisi:
+- Video demo alur kerja lengkap
+- Screenshots semua fitur
+- Tutorial penggunaan aplikasi
+- Contoh implementasi di production
 
 ## Cara Deploy
 
