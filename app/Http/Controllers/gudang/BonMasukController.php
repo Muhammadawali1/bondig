@@ -122,19 +122,6 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
     public function processPrint(Request $request, $id)
     {
-        \Log::info('=== PROCESS PRINT STARTED ===', [
-            'id' => $id,
-            'method' => $request->method(),
-            'has_harga_satuan' => $request->has('harga_satuan'),
-            'request_data' => $request->all(),
-            'php_version' => PHP_VERSION,
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'environment' => app()->environment()
-        ]);
-
-        // Bypass validation temporarily for production debugging
-        \Log::info('ProcessPrint - Bypassing validation for debugging');
         
         // Validate input
         try {
@@ -143,71 +130,44 @@ class BonMasukController extends \App\Http\Controllers\Controller
                 'harga_satuan.*' => 'nullable|numeric|min:0',
                 'tanggal_faktur' => 'nullable|integer|min:1|max:31',
             ]);
-            
-            \Log::info('ProcessPrint validation passed');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('ProcessPrint validation failed', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all()
-            ]);
-            // Don't throw - continue to debug
+            return redirect()->route('gudang.bon-masuk.print', $id)
+                ->with('error', 'Validation failed: ' . implode(', ', $e->errors()->all()));
         }
 
         // Update harga_satuan and tanggal_faktur
         try {
-            \Log::info('ProcessPrint - Finding BonMasuk', ['id' => $id]);
             $bonMasuk = BonMasuk::findOrFail($id);
-            \Log::info('ProcessPrint - BonMasuk found', ['bon_masuk_id' => $bonMasuk->id]);
             
             // Update harga_satuan for each detail
             if ($request->has('harga_satuan') && is_array($request->harga_satuan)) {
-                \Log::info('ProcessPrint - Processing harga_satuan', ['count' => count($request->harga_satuan)]);
                 foreach ($request->harga_satuan as $detailId => $hargaSatuan) {
-                    \Log::info('ProcessPrint - Processing detail', ['detail_id' => $detailId, 'harga' => $hargaSatuan]);
                     $cleanHarga = str_replace('.', '', $hargaSatuan);
                     $cleanHarga = str_replace(',', '.', $cleanHarga);
                     $numericHarga = is_numeric($cleanHarga) ? floatval($cleanHarga) : 0;
                     
                     // If empty, set default price
                     if ($numericHarga == 0) {
-                        $numericHarga = 20000; // Default price for production
-                        \Log::info('ProcessPrint - Using default price', ['detail_id' => $detailId, 'default_price' => $numericHarga]);
+                        $numericHarga = 20000; // Default price
                     }
                     
-                    $updated = BonMasukDetail::where('id', $detailId)
+                    BonMasukDetail::where('id', $detailId)
                         ->where('bon_masuk_id', $bonMasuk->id)
                         ->update(['harga_satuan' => $numericHarga]);
-                    
-                    \Log::info('ProcessPrint - Detail updated', ['detail_id' => $detailId, 'updated' => $updated, 'final_price' => $numericHarga]);
                 }
             } else {
-                \Log::info('ProcessPrint - No harga_satuan data found, setting defaults');
                 // Set default prices for all details if no data provided
                 foreach ($bonMasuk->details as $detail) {
-                    $defaultPrice = 20000;
                     BonMasukDetail::where('id', $detail->id)
-                        ->update(['harga_satuan' => $defaultPrice]);
-                    \Log::info('ProcessPrint - Set default price', ['detail_id' => $detail->id, 'price' => $defaultPrice]);
+                        ->update(['harga_satuan' => 20000]);
                 }
             }
 
             // Update tanggal_faktur if provided
-            \Log::info('ProcessPrint - Before tanggal_faktur check', [
-                'has_tanggal_faktur' => $request->has('tanggal_faktur'),
-                'tanggal_faktur_value' => $request->tanggal_faktur,
-                'all_request_data' => $request->all()
-            ]);
-
             if ($request->has('tanggal_faktur') && $request->tanggal_faktur) {
                 $tahun = $bonMasuk->tanggal_masuk->year;
                 $bulan = $bonMasuk->tanggal_masuk->month;
                 $hari = intval($request->tanggal_faktur);
-                
-                \Log::info('ProcessPrint - Inside tanggal_faktur logic', [
-                    'tahun' => $tahun,
-                    'bulan' => $bulan,
-                    'hari' => $hari
-                ]);
                 
                 // Simple validation
                 if ($hari >= 1 && $hari <= 31) {
@@ -215,30 +175,15 @@ class BonMasukController extends \App\Http\Controllers\Controller
                     $hari = min($hari, $maxDay);
                     $tanggalFaktur = \Carbon\Carbon::create($tahun, $bulan, $hari);
                     $bonMasuk->update(['tanggal_faktur' => $tanggalFaktur]);
-                    
-                    // Debug log
-                    \Log::info('Tanggal Faktur Updated', [
-                        'bon_masuk_id' => $bonMasuk->id,
-                        'input_hari' => $request->tanggal_faktur,
-                        'final_tanggal_faktur' => $tanggalFaktur->format('d F Y')
-                    ]);
                 }
-            } else {
-                \Log::info('ProcessPrint - tanggal_faktur not provided or empty');
             }
 
             // Refresh the model to get updated data
             $bonMasuk->refresh();
             $bonMasuk->load(['details.barang', 'gudang']);
 
-            \Log::info('ProcessPrint completed successfully, returning view');
-
             return view('gudang.print.print-bon-masuk', compact('bonMasuk'));
         } catch (\Exception $e) {
-            \Log::error('ProcessPrint failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return redirect()->route('gudang.bon-masuk.show', $id)
                 ->with('error', 'Gagal memproses print. Error: ' . $e->getMessage());
         }
