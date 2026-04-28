@@ -119,7 +119,7 @@
                                 <th class="p-3 text-left">Jumlah Disetujui</th>
                                 <th class="p-3 text-left">Status Detail</th>
                                 <th class="p-3 text-left">Catatan</th>
-                                <th class="p-3 text-center">Aksi</th>
+                               
                             </tr>
                         </thead>
                         <tbody>
@@ -173,12 +173,7 @@
                                         @endif
                                     </td>
                                     <td class="p-3 text-center">
-                                        <a href="{{ route('gudang.bon.show-edit-detail', [$bonBarang->id, $detail->id]) }}" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition mr-2">
-                                            Edit
-                                        </a>
-                                        <button type="button" class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition delete-btn" data-detail-id="{{ $detail->id }}">
-                                            Hapus
-                                        </button>
+                                        <!-- Edit and Hapus buttons removed -->
                                     </td>
                                 </tr>
                             @endforeach
@@ -189,9 +184,10 @@
 
             <!-- Action Buttons -->
             <div class="mt-6 flex justify-end gap-3">
-                <a href="{{ route('gudang.bon.show-add-detail', $bonBarang->id) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Tambah Barang
+                <a href="{{ route('gudang.bon.print', $bonBarang->id) }}" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    🖨️ Print Bon
                 </a>
+                <!-- Tambah Barang button removed -->
                 <a href="{{ route('gudang.bon.history') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
                     Kembali ke History
                 </a>

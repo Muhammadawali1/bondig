@@ -52,7 +52,21 @@
                 <!-- Bulan Filter (Hidden by default) -->
                 <div id="bulanFilter" class="hidden p-4 border-t">
                     <div class="flex items-center gap-4">
-                        <label class="text-sm font-medium text-gray-700">Pilih Bulan:</label>
+                        <label class="text-sm font-medium text-gray-700">Pilih Tahun:</label>
+                        <select id="tahunSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Pilih Tahun --</option>
+                            <?php
+                                // Get unique years from bon data
+                                $bonYears = $bonBarangs->flatten()->pluck('tanggal_pengajuan')->map(function($date) {
+                                    return $date->format('Y');
+                                })->unique()->sort()->values();
+                            ?>
+                            <?php $__currentLoopData = $bonYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($year); ?>"><?php echo e($year); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                        
+                        <label class="text-sm font-medium text-gray-700 ml-4">Pilih Bulan:</label>
                         <select id="bulanSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">-- Pilih Bulan --</option>
                             <?php
@@ -76,7 +90,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
@@ -88,6 +102,23 @@
                             <p class="text-sm text-gray-500">Total Disetujui</p>
                             <p class="text-2xl font-semibold text-gray-900 stat-disetujui">
                                 <?php echo e($bonBarangs->flatten()->where('status', 'disetujui')->count()); ?>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-500">Total Disetujui Sebagian</p>
+                            <p class="text-2xl font-semibold text-gray-900 stat-disetujui-sebagian">
+                                <?php echo e($bonBarangs->flatten()->where('status', 'disetujui_sebagian')->count()); ?>
 
                             </p>
                         </div>
@@ -117,12 +148,12 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-gray-500">Aksi Massal</p>
-                                <p class="text-lg font-semibold text-gray-900">Hapus Semua</p>
+                                <p class="text-sm text-gray-500">Hapus Berdasarkan Tahun</p>
+                                <p class="text-lg font-semibold text-gray-900">Hapus Bon per Tahun</p>
                             </div>
                         </div>
                         <button onclick="showDeleteAllModal()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
-                            Hapus Semua Bon
+                            Hapus Bon
                         </button>
                     </div>
                 </div>
@@ -142,6 +173,10 @@
                                 <div class="mt-2 flex gap-4 text-sm">
     <span class="text-green-600 stat-divisi-disetujui">
         ✅ Disetujui: <?php echo e($bons->where('status', 'disetujui')->count()); ?>
+
+    </span>
+    <span class="text-yellow-600 stat-divisi-disetujui-sebagian">
+        ⚠️ Disetujui Sebagian: <?php echo e($bons->where('status', 'disetujui_sebagian')->count()); ?>
 
     </span>
 </div>
@@ -165,6 +200,7 @@
                                             <tr class="border-t hover:bg-gray-50 history-row" 
                                                 data-divisi="<?php echo e($bon->divisi); ?>" 
                                                 data-bulan="<?php echo e($bon->tanggal_pengajuan->format('m')); ?>"
+                                                data-tahun="<?php echo e($bon->tanggal_pengajuan->format('Y')); ?>"
                                                 data-status="<?php echo e($bon->status); ?>">
                                                 <td class="p-3 font-mono text-sm"><?php echo e($bon->kode_bon); ?></td>
                                                 <td class="p-3">
@@ -190,10 +226,15 @@
                                                                 ✅ Disetujui
                                                             </span>
                                                             <?php break; ?>
+                                                        <?php case ('disetujui_sebagian'): ?>
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                ⚠️ Disetujui Sebagian
+                                                            </span>
+                                                            <?php break; ?>
                                                     <?php endswitch; ?>
                                                 </td>
                                                 <td class="p-3">
-                                                    <?php if($bon->status === 'disetujui' && $bon->tanggal_gudang): ?>
+                                                    <?php if(($bon->status === 'disetujui' || $bon->status === 'disetujui_sebagian') && $bon->tanggal_gudang): ?>
                                                         <?php echo e($bon->tanggal_gudang->format('F Y')); ?>
 
                                                     <?php elseif($bon->status === 'menunggu_atasan' || $bon->status === 'menunggu_gudang'): ?>
@@ -253,7 +294,7 @@
                         </h3>
                         <div class="mt-2 flex gap-4 text-sm">
                             <span class="text-green-600">
-                                ✅ Disetujui: <?php echo e($allBons->where('status', 'disetujui')->count()); ?>
+                                ✅ Disetujui: <?php echo e($allBons->whereIn('status', ['disetujui', 'disetujui_sebagian'])->count()); ?>
 
                             </span>
                         </div>
@@ -278,6 +319,7 @@
                                     <tr class="border-t hover:bg-gray-50 semua-bon-row" 
                                         data-divisi="<?php echo e($bon->divisi); ?>" 
                                         data-bulan="<?php echo e($bon->tanggal_pengajuan->format('m')); ?>"
+                                        data-tahun="<?php echo e($bon->tanggal_pengajuan->format('Y')); ?>"
                                         data-status="<?php echo e($bon->status); ?>">
                                         <td class="p-3 font-mono text-sm"><?php echo e($bon->kode_bon); ?></td>
                                         <td class="p-3">
@@ -309,10 +351,15 @@
                                                         ✅ Disetujui
                                                     </span>
                                                     <?php break; ?>
+                                                <?php case ('disetujui_sebagian'): ?>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        ⚠️ Disetujui Sebagian
+                                                    </span>
+                                                    <?php break; ?>
                                             <?php endswitch; ?>
                                         </td>
                                         <td class="p-3">
-                                            <?php if($bon->status === 'disetujui' && $bon->tanggal_gudang): ?>
+                                            <?php if(($bon->status === 'disetujui' || $bon->status === 'disetujui_sebagian') && $bon->tanggal_gudang): ?>
                                                 <?php echo e($bon->tanggal_gudang->format('F Y')); ?>
 
                                             <?php elseif($bon->status === 'menunggu_atasan' || $bon->status === 'menunggu_gudang'): ?>
@@ -365,19 +412,33 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900">Hapus Semua Bon</h3>
-            <div class="mt-2 px-7 py-3">
-                <p class="text-sm text-gray-500">Apakah Anda yakin ingin menghapus SEMUA bon barang?</p>
-                <p class="text-xs text-red-600 mt-2">Tindakan ini akan menghapus semua bon dari database dan tidak dapat dibatalkan. Ini akan mempengaruhi semua role (Pegawai, Atasan, Gudang).</p>
-            </div>
+            <h3 class="text-lg font-medium text-gray-900">Hapus Bon Berdasarkan Tahun</h3>
             <form id="deleteAllForm" method="POST" action="<?php echo e(route('gudang.bon.delete-all')); ?>">
                 <?php echo csrf_field(); ?>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">Pilih tahun untuk menghapus bon barang pada tahun tersebut.</p>
+                    <p class="text-xs text-red-600 mt-2">Tindakan ini akan menghapus semua bon pada tahun yang dipilih dan tidak dapat dibatalkan.</p>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tahun:</label>
+                        <select name="tahun" id="deleteYearSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                            <option value="">-- Pilih Tahun --</option>
+                            <?php
+                                $availableYears = $bonBarangs->flatten()->pluck('tanggal_pengajuan')->map(function($date) {
+                                    return $date->format('Y');
+                                })->unique()->sort()->values();
+                            ?>
+                            <?php $__currentLoopData = $availableYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($year); ?>"><?php echo e($year); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
+                </div>
                 <div class="mt-4 flex justify-center gap-3">
                     <button type="button" onclick="closeDeleteAllModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
                         Batal
                     </button>
                     <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                        Ya, Hapus Semua
+                        Hapus Bon Tahun Terpilih
                     </button>
                 </div>
             </form>

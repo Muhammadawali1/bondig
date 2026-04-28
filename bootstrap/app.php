@@ -19,10 +19,21 @@ return Application::configure(basePath: dirname(__DIR__))
             'divisi' => \App\Http\Middleware\DivisiMiddleware::class,
             'sanitize' => \App\Http\Middleware\SanitizeInput::class,
             'rate.limit' => \App\Http\Middleware\RateLimitProtection::class,
+            'force.https' => \App\Http\Middleware\ForceHttps::class,
         ]);
-
-        $middleware->append(\App\Http\Middleware\ForceHttps::class);
+        
+        // Apply ForceHttps middleware globally in production
+        if (app()->environment('production')) {
+            $middleware->append(\App\Http\Middleware\ForceHttps::class);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+// Force URL scheme based on environment
+if (app()->environment('production')) {
+    \URL::forceScheme('https');
+} else {
+    \URL::forceScheme('http');
+}

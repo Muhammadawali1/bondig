@@ -51,6 +51,11 @@
                                     ✅ Disetujui
                                 </span>
                                 <?php break; ?>
+                            <?php case ('disetujui_sebagian'): ?>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    ⚠️ Disetujui Sebagian
+                                </span>
+                                <?php break; ?>
                             <?php case ('ditolak'): ?>
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                                     ❌ Ditolak
@@ -78,7 +83,7 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <p class="text-sm font-medium text-gray-500">Proses Selesai</p>
-                        <?php if($bonBarang->status === 'disetujui' && $bonBarang->tanggal_gudang): ?>
+                        <?php if(($bonBarang->status === 'disetujui' || $bonBarang->status === 'disetujui_sebagian') && $bonBarang->tanggal_gudang): ?>
                             <p class="text-lg font-semibold text-green-600"><?php echo e($bonBarang->tanggal_gudang->format('F Y')); ?></p>
                         <?php elseif($bonBarang->status === 'ditolak' && $bonBarang->tanggal_atasan): ?>
                             <p class="text-lg font-semibold text-red-600"><?php echo e($bonBarang->tanggal_atasan->format('F Y')); ?></p>
@@ -115,7 +120,7 @@
                                 <th class="p-3 text-left">Jumlah Disetujui</th>
                                 <th class="p-3 text-left">Status Detail</th>
                                 <th class="p-3 text-left">Catatan</th>
-                                <th class="p-3 text-center">Aksi</th>
+                               
                             </tr>
                         </thead>
                         <tbody>
@@ -170,9 +175,7 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="p-3 text-center">
-                                        <button onclick="showEditModal(<?php echo e($detail->id); ?>)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
-                                            Edit
-                                        </button>
+                                        <!-- Edit and Hapus buttons removed -->
                                     </td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -183,9 +186,10 @@
 
             <!-- Action Buttons -->
             <div class="mt-6 flex justify-end gap-3">
-                <button onclick="showAddModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Tambah Barang
-                </button>
+                <a href="<?php echo e(route('gudang.bon.print', $bonBarang->id)); ?>" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    🖨️ Print Bon
+                </a>
+                <!-- Tambah Barang button removed -->
                 <a href="<?php echo e(route('gudang.bon.history')); ?>" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
                     Kembali ke History
                 </a>
@@ -198,77 +202,29 @@
     </div>
 </div>
 
-<!-- Edit Item Modal -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900">Edit Barang</h3>
-            <form id="editForm" method="POST" action="<?php echo e(route('gudang.bon.edit-detail', $bonBarang->id)); ?>">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Hapus Barang</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">Apakah Anda yakin ingin menghapus barang ini?</p>
+                <p class="text-xs text-gray-400 mt-2">Stok akan dikembalikan secara otomatis.</p>
+            </div>
+            <form id="deleteForm" method="POST" action="<?php echo e(route('gudang.bon.delete-detail', $bonBarang->id)); ?>">
                 <?php echo csrf_field(); ?>
-                <input type="hidden" name="detail_id" id="editDetailId">
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Disetujui</label>
-                    <input type="number" name="jumlah_disetujui" id="editJumlah" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status Detail</label>
-                    <select name="status_detail" id="editStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="disetujui">Disetujui</option>
-                        <option value="sebagian">Sebagian</option>
-                        <option value="ditolak">Ditolak</option>
-                    </select>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                    <textarea name="catatan" id="editCatatan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                </div>
-                <div class="mt-4 flex justify-end gap-3">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                <input type="hidden" name="detail_id" id="deleteDetailId">
+                <div class="mt-4 flex justify-center gap-3">
+                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
                         Batal
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        Simpan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Add Item Modal -->
-<div id="addModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900">Tambah Barang</h3>
-            <form id="addForm" method="POST" action="<?php echo e(route('gudang.bon.add-detail', $bonBarang->id)); ?>">
-                <?php echo csrf_field(); ?>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Barang</label>
-                    <select name="barang_id" id="addBarang" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                        <option value="">Pilih Barang</option>
-                        <?php
-                            $existingBarangIds = $bonBarang->details->pluck('barang_id')->toArray();
-                            $allBarangs = \App\Models\Barang::whereNotIn('id', $existingBarangIds)->get();
-                        ?>
-                        <?php $__currentLoopData = $allBarangs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $barang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($barang->id); ?>"><?php echo e($barang->nama_barang); ?> (Stok: <?php echo e($barang->stok); ?>)</option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
-                    <input type="number" name="jumlah" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                    <textarea name="catatan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
-                </div>
-                <div class="mt-4 flex justify-end gap-3">
-                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                        Tambah
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        Hapus
                     </button>
                 </div>
             </form>
@@ -277,30 +233,19 @@
 </div>
 
 <script>
-function showEditModal(detailId) {
-    const detail = <?php echo e(json_encode($bonBarang->details->keyBy('id'))); ?>;
-    const selectedDetail = detail[detailId];
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const detailId = this.getAttribute('data-detail-id');
+            document.getElementById('deleteDetailId').value = detailId;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        });
+    });
+});
 
-    document.getElementById('editDetailId').value = detailId;
-    document.getElementById('editJumlah').value = selectedDetail.jumlah_disetujui;
-    document.getElementById('editStatus').value = selectedDetail.status_detail;
-    document.getElementById('editCatatan').value = selectedDetail.catatan || '';
-
-    document.getElementById('editModal').classList.remove('hidden');
-}
-
-function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
-    document.getElementById('editForm').reset();
-}
-
-function showAddModal() {
-    document.getElementById('addModal').classList.remove('hidden');
-}
-
-function closeAddModal() {
-    document.getElementById('addModal').classList.add('hidden');
-    document.getElementById('addForm').reset();
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteForm').reset();
 }
 </script>
 <?php $__env->stopSection(); ?>

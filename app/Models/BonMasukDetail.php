@@ -15,6 +15,7 @@ class BonMasukDetail extends Model
         'barang_id',
         'jumlah_masuk',
         'catatan',
+        'harga_satuan',
     ];
 
     public function bonMasuk(): BelongsTo

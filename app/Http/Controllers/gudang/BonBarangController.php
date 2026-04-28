@@ -433,4 +433,37 @@ class BonBarangController extends \App\Http\Controllers\Controller
         }
     }
 
+    public function print($id)
+    {
+        $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
+            ->whereNotNull('kode_bon')
+            ->where('kode_bon', '!=', '')
+            ->findOrFail($id);
+        
+        return view('gudang.print.print-date-form', compact('bonBarang'));
+    }
+
+    public function processPrint(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal_cetak' => 'required|integer|min:1|max:31'
+        ]);
+
+        $bonBarang = BonBarang::with(['details.barang', 'pegawai'])
+            ->whereIn('status', ['disetujui', 'disetujui_sebagian'])
+            ->whereNotNull('kode_bon')
+            ->where('kode_bon', '!=', '')
+            ->findOrFail($id);
+        
+        // Combine input day with bon's month and year
+        $tanggalCetak = \Carbon\Carbon::create(
+            $bonBarang->tanggal_pengajuan->year,
+            $bonBarang->tanggal_pengajuan->month,
+            $request->tanggal_cetak
+        );
+        
+        return view('gudang.print.print', compact('bonBarang', 'tanggalCetak'));
+    }
+
 }

@@ -50,11 +50,12 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
         DB::beginTransaction();
         try {
-            // Create bon masuk
+            // Create bon masuk with user input date
+            $tanggalMasuk = $request->tanggal_masuk ?? now();
             $bonMasuk = BonMasuk::create([
                 'gudang_id' => auth()->id(),
                 'supplier' => $request->supplier,
-                'tanggal_masuk' => $request->tanggal_masuk ?? now(),
+                'tanggal_masuk' => $tanggalMasuk,
                 'status' => 'selesai',
             ]);
 
@@ -99,5 +100,129 @@ class BonMasukController extends \App\Http\Controllers\Controller
             ->findOrFail($id);
         
         return view('gudang.bon-masuk.show', compact('bonMasuk'));
+    }
+
+    public function print($id)
+    {
+        try {
+            $bonMasuk = BonMasuk::with(['details.barang', 'gudang'])
+                ->findOrFail($id);
+            
+            return view('gudang.print.print-harga-form', compact('bonMasuk'));
+        } catch (\Exception $e) {
+            \Log::error('Print Bon Masuk Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('gudang.bon-masuk.index')
+                ->with('error', 'Gagal memuat halaman print. Error: ' . $e->getMessage());
+        }
+    }
+
+    public function processPrint(Request $request, $id)
+    {
+        // Update harga_satuan and tanggal_faktur
+        try {
+            $bonMasuk = BonMasuk::findOrFail($id);
+            
+            // Update harga_satuan for each detail
+            foreach ($request->harga_satuan as $detailId => $hargaSatuan) {
+                $cleanHarga = str_replace('.', '', $hargaSatuan);
+                $cleanHarga = str_replace(',', '.', $cleanHarga);
+                $numericHarga = is_numeric($cleanHarga) ? floatval($cleanHarga) : 0;
+                
+                BonMasukDetail::where('id', $detailId)
+                    ->where('bon_masuk_id', $bonMasuk->id)
+                    ->update(['harga_satuan' => $numericHarga]);
+            }
+
+            // Update tanggal_faktur if provided
+            \Log::info('ProcessPrint - Before tanggal_faktur check', [
+                'has_tanggal_faktur' => $request->has('tanggal_faktur'),
+                'tanggal_faktur_value' => $request->tanggal_faktur,
+                'all_request_data' => $request->all()
+            ]);
+
+            if ($request->has('tanggal_faktur') && $request->tanggal_faktur) {
+                $tahun = $bonMasuk->tanggal_masuk->year;
+                $bulan = $bonMasuk->tanggal_masuk->month;
+                $hari = intval($request->tanggal_faktur);
+                
+                \Log::info('ProcessPrint - Inside tanggal_faktur logic', [
+                    'tahun' => $tahun,
+                    'bulan' => $bulan,
+                    'hari' => $hari
+                ]);
+                
+                // Simple validation
+                if ($hari >= 1 && $hari <= 31) {
+                    $maxDay = \Carbon\Carbon::create($tahun, $bulan, 1)->daysInMonth;
+                    $hari = min($hari, $maxDay);
+                    $tanggalFaktur = \Carbon\Carbon::create($tahun, $bulan, $hari);
+                    $bonMasuk->update(['tanggal_faktur' => $tanggalFaktur]);
+                    
+                    // Debug log
+                    \Log::info('Tanggal Faktur Updated', [
+                        'bon_masuk_id' => $bonMasuk->id,
+                        'input_hari' => $request->tanggal_faktur,
+                        'final_tanggal_faktur' => $tanggalFaktur->format('d F Y')
+                    ]);
+                }
+            } else {
+                \Log::info('ProcessPrint - tanggal_faktur not provided or empty');
+            }
+
+            // Refresh the model to get updated data
+            $bonMasuk->refresh();
+            $bonMasuk->load(['details.barang', 'gudang']);
+
+            return view('gudang.print.print-bon-masuk', compact('bonMasuk'));
+        } catch (\Exception $e) {
+            return redirect()->route('gudang.bon-masuk.print', $id)
+                ->with('error', 'Gagal memproses print. Error: ' . $e->getMessage());
+        }
+    }
+
+    public function editHarga($id)
+    {
+        $bonMasuk = BonMasuk::with(['details.barang', 'gudang'])
+            ->findOrFail($id);
+        
+        return view('gudang.bon-masuk.edit-harga', compact('bonMasuk'));
+    }
+
+    public function updateHarga(Request $request, $id)
+    {
+        $request->validate([
+            'harga_satuan' => 'required|array',
+            'harga_satuan.*' => 'nullable|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $bonMasuk = BonMasuk::findOrFail($id);
+            
+            foreach ($request->harga_satuan as $detailId => $hargaSatuan) {
+                $detail = BonMasukDetail::findOrFail($detailId);
+                $detail->update([
+                    'harga_satuan' => $hargaSatuan ? $hargaSatuan : null,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('gudang.bon-masuk.show', $id)
+                ->with('success', 'Harga satuan berhasil diperbarui!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Update Harga Satuan Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('gudang.bon-masuk.edit-harga', $id)
+                ->with('error', 'Gagal memperbarui harga satuan. Error: ' . $e->getMessage());
+        }
     }
 }

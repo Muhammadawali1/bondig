@@ -70,8 +70,8 @@
                                                 
                                                 // Then redirect based on notification type
                                                 if(notifikasi.password_change_request_id) {
-                                                    // Password change notifications - redirect to password index
-                                                    window.location.href = '/password';
+                                                    // Password change notifications - redirect to password requests page
+                                                    window.location.href = '/administrator/password-requests';
                                                 } else if(notifikasi.bon_barang_id) {
                                                     // Bon notifications
                                                     <?php if(auth()->user()->isPegawai()): ?>
@@ -90,7 +90,7 @@
                                                 // Still redirect even if marking as read fails
                                                 if(notifikasi.password_change_request_id) {
                                                     // Password change notifications
-                                                    window.location.href = '/password';
+                                                    window.location.href = '/administrator/password-requests';
                                                 } else if(notifikasi.bon_barang_id) {
                                                     // Bon notifications
                                                     <?php if(auth()->user()->isPegawai()): ?>

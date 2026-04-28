@@ -59,6 +59,11 @@ Route::middleware(['role:gudang', 'auth', 'user.active', 'sanitize', 'rate.limit
         ->name('bon.add-detail');
     Route::post('/bon/{id}/delete-detail', [BonBarangController::class, 'deleteDetail'])
         ->name('bon.delete-detail');
+    
+    Route::get('/bon/{id}/print', [BonBarangController::class, 'print'])
+        ->name('bon.print');
+    Route::post('/bon/{id}/print', [BonBarangController::class, 'processPrint'])
+        ->name('bon.print.process');
 
     // BON MASUK
     Route::get('/bon-masuk', [BonMasukController::class, 'index'])
@@ -69,4 +74,8 @@ Route::middleware(['role:gudang', 'auth', 'user.active', 'sanitize', 'rate.limit
         ->name('bon-masuk.store');
     Route::get('/bon-masuk/{id}', [BonMasukController::class, 'show'])
         ->name('bon-masuk.show');
+    Route::get('/bon-masuk/{id}/print', [BonMasukController::class, 'print'])
+        ->name('bon-masuk.print');
+    Route::post('/bon-masuk/{id}/print', [BonMasukController::class, 'processPrint'])
+        ->name('bon-masuk.print.process');
 });

@@ -93,7 +93,7 @@ npm run build
 
 # Jalin aplikasi
 php artisan serve
-# Buka http://localhost:8000
+# Buka https://localhost:8000
 ```
 
 ## Database Structure

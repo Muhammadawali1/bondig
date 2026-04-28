@@ -16,10 +16,12 @@ class BonMasuk extends Model
         'supplier',
         'status',
         'tanggal_masuk',
+        'tanggal_faktur',
     ];
 
     protected $casts = [
         'tanggal_masuk' => 'datetime',
+        'tanggal_faktur' => 'datetime',
     ];
 
     public function gudang(): BelongsTo

@@ -1,44 +1,44 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Bon Masuk - Gudang'); ?>
 
-@section('title', 'Bon Masuk - Gudang')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="flex min-h-screen bg-gray-50">
 
     <!-- Sidebar -->
     <div class="hidden md:flex">
-        @include('components.sidebar')
+        <?php echo $__env->make('components.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Navbar (desktop only) -->
         <div class="hidden md:block">
-            @include('components.navbar')
+            <?php echo $__env->make('components.navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         </div>
 
         <!-- Mobile Navbar -->
-        @include('components.mobile-navbar')
+        <?php echo $__env->make('components.mobile-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <!-- Page Content -->
         <main class="flex-1 p-6">
             <!-- Success Message -->
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    {{ session('success') }}
-                </div>
-            @endif
+                    <?php echo e(session('success')); ?>
 
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
                 </div>
-            @endif
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <?php echo e(session('error')); ?>
+
+                </div>
+            <?php endif; ?>
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 class="text-2xl font-bold">📥 Bon Masuk</h1>
                 <div class="flex gap-2">
-                    <a href="{{ route('gudang.bon-masuk.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                    <a href="<?php echo e(route('gudang.bon-masuk.create')); ?>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -66,21 +66,21 @@
                         <label class="text-sm font-medium text-gray-700">Pilih Tahun:</label>
                         <select id="tahunSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">-- Pilih Tahun --</option>
-                            @php
+                            <?php
                                 // Get unique years from bon data
                                 $bonYears = $bonMasuks->pluck('tanggal_masuk')->map(function($date) {
                                     return $date ? $date->format('Y') : null;
                                 })->filter()->unique()->sort()->values();
-                            @endphp
-                            @foreach($bonYears as $year)
-                                <option value="{{ $year }}">{{ $year }}</option>
-                            @endforeach
+                            ?>
+                            <?php $__currentLoopData = $bonYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($year); ?>"><?php echo e($year); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                         
                         <label class="text-sm font-medium text-gray-700 ml-4">Pilih Bulan:</label>
                         <select id="bulanSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">-- Pilih Bulan --</option>
-                            @php
+                            <?php
                                 $months = [
                                     '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
                                     '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
@@ -91,10 +91,10 @@
                                 $bonMonths = $bonMasuks->pluck('tanggal_masuk')->map(function($date) {
                                     return $date ? $date->format('m') : null;
                                 })->filter()->unique()->sort()->values();
-                            @endphp
-                            @foreach($bonMonths as $month)
-                                <option value="{{ $month }}">{{ $months[$month] }}</option>
-                            @endforeach
+                            ?>
+                            <?php $__currentLoopData = $bonMonths; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $month): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($month); ?>"><?php echo e($months[$month]); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-500">Total Bon Masuk</p>
-                            <p class="text-2xl font-semibold">{{ $bonMasuks->count() }}</p>
+                            <p class="text-2xl font-semibold"><?php echo e($bonMasuks->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-500">Total Item Masuk</p>
-                            <p class="text-2xl font-semibold">{{ $bonMasuks->sum(function($bon) { return $bon->details->count(); }) }}</p>
+                            <p class="text-2xl font-semibold"><?php echo e($bonMasuks->sum(function($bon) { return $bon->details->count(); })); ?></p>
                         </div>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-500">Bulan Ini</p>
-                            <p class="text-2xl font-semibold">{{ $bonMasuks->filter(function($bon) { return $bon->tanggal_masuk->month === now()->month; })->count() }}</p>
+                            <p class="text-2xl font-semibold"><?php echo e($bonMasuks->filter(function($bon) { return $bon->tanggal_masuk->month === now()->month; })->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
 
             <!-- Bon Masuk List -->
             <div class="bg-white shadow rounded-lg overflow-hidden">
-                @if($bonMasuks->count() > 0)
+                <?php if($bonMasuks->count() > 0): ?>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead class="bg-gray-100">
@@ -162,38 +162,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($bonMasuks as $bonMasuk)
+                                <?php $__currentLoopData = $bonMasuks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $bonMasuk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="border-t hover:bg-gray-50">
-                                        <td class="p-3">{{ $bonMasuk->id }}</td>
-                                        <td class="p-3">{{ $bonMasuk->supplier ?: '-' }}</td>
-                                        <td class="p-3">{{ $bonMasuk->tanggal_masuk ? $bonMasuk->tanggal_masuk->format('d/m/Y') : '-' }}</td>
-                                        <td class="p-3">{{ $bonMasuk->details->count() }} item</td>
-                                        <td class="p-3">{{ $bonMasuk->details->sum('jumlah_masuk') }} barang</td>
+                                        <td class="p-3"><?php echo e($bonMasuk->id); ?></td>
+                                        <td class="p-3"><?php echo e($bonMasuk->supplier ?: '-'); ?></td>
+                                        <td class="p-3"><?php echo e($bonMasuk->tanggal_masuk ? $bonMasuk->tanggal_masuk->format('d/m/Y') : '-'); ?></td>
+                                        <td class="p-3"><?php echo e($bonMasuk->details->count()); ?> item</td>
+                                        <td class="p-3"><?php echo e($bonMasuk->details->sum('jumlah_masuk')); ?> barang</td>
                                         <td class="p-3">
-                                            @if($bonMasuk->status === 'selesai')
+                                            <?php if($bonMasuk->status === 'selesai'): ?>
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     ✅ Selesai
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                     ⏳ Pending
                                                 </span>
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
                                         <td class="p-3">
                                             <div class="flex justify-center gap-2">
-                                                <a href="{{ route('gudang.bon-masuk.show', $bonMasuk->id) }}" 
+                                                <a href="<?php echo e(route('gudang.bon-masuk.show', $bonMasuk->id)); ?>" 
                                                    class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm">
                                                     Detail
                                                 </a>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="p-8 text-center text-gray-500">
                         <div class="mb-4">
                             <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,16 +201,16 @@
                             </svg>
                         </div>
                         <p>Belum ada bon masuk</p>
-                        <a href="{{ route('gudang.bon-masuk.create') }}" class="text-blue-600 hover:underline mt-2 inline-block">
+                        <a href="<?php echo e(route('gudang.bon-masuk.create')); ?>" class="text-blue-600 hover:underline mt-2 inline-block">
                             Buat bon masuk pertama
                         </a>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </main>
 
         <!-- Footer -->
-        @include('components.footer')
+        <?php echo $__env->make('components.footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     </div>
 </div>
@@ -282,4 +282,6 @@ function applyFilter() {
     window.location.href = url.toString();
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\bonn-dig-final-bos\resources\views/gudang/bon-masuk/index.blade.php ENDPATH**/ ?>
