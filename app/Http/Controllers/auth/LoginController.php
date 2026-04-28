@@ -49,8 +49,8 @@ class LoginController extends Controller
         // ✅ VALIDASI CAPTCHA (DITAMBAHKAN)
         if (empty($request->captcha)) {
             $errors['captcha'] = 'Captcha wajib diisi.';
-        } elseif (!captcha_check($request->captcha)) {
-            $errors['captcha'] = 'Captcha salah.';
+        } elseif (!\App\Helpers\CaptchaHelper::check($request->captcha)) {
+            $errors['captcha'] = 'Captcha salah. Harus sesuai huruf besar/kecil.';
         }
         
         if (!empty($errors)) {

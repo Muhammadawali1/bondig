@@ -159,7 +159,7 @@
 
         <!-- INPUT CAPTCHA -->
         <input type="text" name="captcha" required
-            placeholder="Kode Captcha"
+            placeholder="Kode Captcha (case sensitive)"
             class="flex-1 min-w-[120px] px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
     </div>
 
@@ -167,6 +167,9 @@
     @error('captcha')
         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
     @enderror
+    
+    <!-- HELPER TEXT -->
+    <p class="mt-1 text-xs text-gray-500">⚠️ Harus sesuai huruf besar/kecil yang ada di gambar</p>
 </div>
 
            

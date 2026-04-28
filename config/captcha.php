@@ -20,6 +20,7 @@ return [
         'math' => false,
         'expire' => 60,
         'encrypt' => false,
+        'sensitive' => true, // Case sensitive validation
     ],
 
     'flat' => [
@@ -33,6 +34,7 @@ return [
         'bgImage' => false,
         'bgColor' => '#ffffff', // putih clean
         'contrast' => 0,
+        'sensitive' => true, // Case sensitive validation
     ],
 
     'mini' => [
