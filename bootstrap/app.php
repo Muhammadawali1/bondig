@@ -23,7 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         
         // Apply ForceHttps middleware globally in production
-        if (app()->environment('production')) {
+        // Use env() directly instead of app()->environment() to avoid early initialization issues
+        if (env('APP_ENV') === 'production') {
             $middleware->append(\App\Http\Middleware\ForceHttps::class);
         }
     })
@@ -32,7 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })->create();
 
 // Force URL scheme based on environment
-if (app()->environment('production')) {
+// Use env() directly instead of app()->environment() to avoid early initialization issues
+if (env('APP_ENV') === 'production') {
     \URL::forceScheme('https');
 } else {
     \URL::forceScheme('http');
