@@ -168,14 +168,27 @@ class BonMasukController extends \App\Http\Controllers\Controller
                     $cleanHarga = str_replace(',', '.', $cleanHarga);
                     $numericHarga = is_numeric($cleanHarga) ? floatval($cleanHarga) : 0;
                     
+                    // If empty, set default price
+                    if ($numericHarga == 0) {
+                        $numericHarga = 20000; // Default price for production
+                        \Log::info('ProcessPrint - Using default price', ['detail_id' => $detailId, 'default_price' => $numericHarga]);
+                    }
+                    
                     $updated = BonMasukDetail::where('id', $detailId)
                         ->where('bon_masuk_id', $bonMasuk->id)
                         ->update(['harga_satuan' => $numericHarga]);
                     
-                    \Log::info('ProcessPrint - Detail updated', ['detail_id' => $detailId, 'updated' => $updated]);
+                    \Log::info('ProcessPrint - Detail updated', ['detail_id' => $detailId, 'updated' => $updated, 'final_price' => $numericHarga]);
                 }
             } else {
-                \Log::info('ProcessPrint - No harga_satuan data found');
+                \Log::info('ProcessPrint - No harga_satuan data found, setting defaults');
+                // Set default prices for all details if no data provided
+                foreach ($bonMasuk->details as $detail) {
+                    $defaultPrice = 20000;
+                    BonMasukDetail::where('id', $detail->id)
+                        ->update(['harga_satuan' => $defaultPrice]);
+                    \Log::info('ProcessPrint - Set default price', ['detail_id' => $detail->id, 'price' => $defaultPrice]);
+                }
             }
 
             // Update tanggal_faktur if provided
