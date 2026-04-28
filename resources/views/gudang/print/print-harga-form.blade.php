@@ -178,6 +178,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form[method="POST"]');
     if (form) {
         form.addEventListener('submit', function(e) {
+            // Validate all harga inputs
+            const hargaInputs = form.querySelectorAll('input[name^="harga_satuan"]');
+            let isValid = true;
+            
+            hargaInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value && isNaN(parseFloat(value.replace(/\./g, '').replace(/,/g, '.')))) {
+                    isValid = false;
+                    input.classList.add('border-red-500');
+                } else {
+                    input.classList.remove('border-red-500');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Mohon periksa kembali input harga satuan. Pastikan format angka benar.');
+                return false;
+            }
+            
             // Disable submit button to prevent double submission
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
@@ -186,6 +206,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Add input formatting
+    const hargaInputs = document.querySelectorAll('input[name^="harga_satuan"]');
+    hargaInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const value = this.value.replace(/\./g, '');
+            if (value && !isNaN(value)) {
+                const numValue = parseFloat(value);
+                if (numValue > 0) {
+                    this.value = numValue.toLocaleString('id-ID');
+                }
+            }
+        });
+    });
 });
 </script>
 @endsection

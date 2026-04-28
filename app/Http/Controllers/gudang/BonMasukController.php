@@ -122,6 +122,13 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
     public function processPrint(Request $request, $id)
     {
+        // Validate input
+        $request->validate([
+            'harga_satuan' => 'required|array',
+            'harga_satuan.*' => 'nullable|numeric|min:0',
+            'tanggal_faktur' => 'nullable|integer|min:1|max:31',
+        ]);
+
         // Update harga_satuan and tanggal_faktur
         try {
             $bonMasuk = BonMasuk::findOrFail($id);
