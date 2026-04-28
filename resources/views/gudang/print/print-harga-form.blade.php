@@ -173,47 +173,17 @@ function calculateTotal(input, jumlah) {
     }
 }
 
-// Add form submission handler to prevent issues
+// Simple form submission handler
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Form handler loaded');
     const form = document.querySelector('form[method="POST"]');
-    console.log('Form found:', form);
     
     if (form) {
         form.addEventListener('submit', function(e) {
-            console.log('Form submit triggered');
-            alert('Form submit triggered - check console for details');
-            
-            // Validate all harga inputs
-            const hargaInputs = form.querySelectorAll('input[name^="harga_satuan"]');
-            let isValid = true;
-            
-            hargaInputs.forEach(input => {
-                const value = input.value.trim();
-                console.log('Input value:', value);
-                if (value && isNaN(parseFloat(value.replace(/\./g, '').replace(/,/g, '.')))) {
-                    isValid = false;
-                    input.classList.add('border-red-500');
-                    console.log('Invalid input detected:', value);
-                } else {
-                    input.classList.remove('border-red-500');
-                }
-            });
-            
-            console.log('Form validation result:', isValid);
-            
-            if (!isValid) {
-                e.preventDefault();
-                alert('Mohon periksa kembali input harga satuan. Pastikan format angka benar.');
-                return false;
-            }
-            
             // Disable submit button to prevent double submission
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Processing...';
-                console.log('Submit button disabled');
             }
         });
     }
