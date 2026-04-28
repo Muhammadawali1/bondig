@@ -456,6 +456,15 @@ class BonBarangController extends \App\Http\Controllers\Controller
             ->where('kode_bon', '!=', '')
             ->findOrFail($id);
         
+        // Debug: Log keterangan data
+        \Log::info('Print Bon Debug', [
+            'bon_id' => $bonBarang->id,
+            'keterangan' => $bonBarang->keterangan,
+            'keterangan_is_null' => is_null($bonBarang->keterangan),
+            'keterangan_empty' => empty($bonBarang->keterangan),
+            'all_bon_data' => $bonBarang->toArray()
+        ]);
+        
         // Combine input day with bon's month and year
         $tanggalCetak = \Carbon\Carbon::create(
             $bonBarang->tanggal_pengajuan->year,
