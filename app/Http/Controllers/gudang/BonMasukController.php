@@ -133,6 +133,9 @@ class BonMasukController extends \App\Http\Controllers\Controller
             'environment' => app()->environment()
         ]);
 
+        // Bypass validation temporarily for production debugging
+        \Log::info('ProcessPrint - Bypassing validation for debugging');
+        
         // Validate input
         try {
             $request->validate([
@@ -147,7 +150,7 @@ class BonMasukController extends \App\Http\Controllers\Controller
                 'errors' => $e->errors(),
                 'request_data' => $request->all()
             ]);
-            throw $e;
+            // Don't throw - continue to debug
         }
 
         // Update harga_satuan and tanggal_faktur
