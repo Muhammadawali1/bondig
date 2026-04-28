@@ -176,8 +176,11 @@ function calculateTotal(input, jumlah) {
 // Aggressive debugging for form submission
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== FORM DEBUG START ===');
-    const form = document.querySelector('form[method="POST"]');
-    console.log('Form found:', form);
+    // Look for print form specifically - not logout form
+    const form = document.querySelector('main form[method="POST"]') || 
+                 document.querySelector('.container form[method="POST"]') ||
+                 document.querySelector('form[action*="print"]');
+    console.log('Print form found:', form);
     
     if (form) {
         // Log form details
