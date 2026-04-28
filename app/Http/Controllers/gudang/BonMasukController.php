@@ -205,7 +205,11 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
             return view('gudang.print.print-bon-masuk', compact('bonMasuk'));
         } catch (\Exception $e) {
-            return redirect()->route('gudang.bon-masuk.print', $id)
+            \Log::error('ProcessPrint failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('gudang.bon-masuk.show', $id)
                 ->with('error', 'Gagal memproses print. Error: ' . $e->getMessage());
         }
     }
