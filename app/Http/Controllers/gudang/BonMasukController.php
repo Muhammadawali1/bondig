@@ -122,8 +122,10 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
     public function processPrint(Request $request, $id)
     {
-        \Log::info('ProcessPrint started', [
+        \Log::info('=== PROCESS PRINT STARTED ===', [
             'id' => $id,
+            'method' => $request->method(),
+            'has_harga_satuan' => $request->has('harga_satuan'),
             'request_data' => $request->all()
         ]);
 

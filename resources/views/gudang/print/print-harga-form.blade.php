@@ -172,38 +172,5 @@ function calculateTotal(input, jumlah) {
         totalCell.textContent = '-';
     }
 }
-
-// Normal form submission handler
-document.addEventListener('DOMContentLoaded', function() {
-    // Look for print form specifically - not logout form
-    const form = document.querySelector('main form[method="POST"]') || 
-                 document.querySelector('.container form[method="POST"]') ||
-                 document.querySelector('form[action*="print"]');
-    
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Disable submit button to prevent double submission
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-            }
-        });
-    }
-    
-    // Add input formatting
-    const hargaInputs = document.querySelectorAll('input[name^="harga_satuan"]');
-    hargaInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            const value = this.value.replace(/\./g, '');
-            if (value && !isNaN(value)) {
-                const numValue = parseFloat(value);
-                if (numValue > 0) {
-                    this.value = numValue.toLocaleString('id-ID');
-                }
-            }
-        });
-    });
-});
 </script>
 @endsection
