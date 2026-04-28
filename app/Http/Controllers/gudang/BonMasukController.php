@@ -132,7 +132,7 @@ class BonMasukController extends \App\Http\Controllers\Controller
         // Validate input
         try {
             $request->validate([
-                'harga_satuan' => 'required|array',
+                'harga_satuan' => 'array',
                 'harga_satuan.*' => 'nullable|numeric|min:0',
                 'tanggal_faktur' => 'nullable|integer|min:1|max:31',
             ]);
