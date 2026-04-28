@@ -126,7 +126,11 @@ class BonMasukController extends \App\Http\Controllers\Controller
             'id' => $id,
             'method' => $request->method(),
             'has_harga_satuan' => $request->has('harga_satuan'),
-            'request_data' => $request->all()
+            'request_data' => $request->all(),
+            'php_version' => PHP_VERSION,
+            'memory_limit' => ini_get('memory_limit'),
+            'max_execution_time' => ini_get('max_execution_time'),
+            'environment' => app()->environment()
         ]);
 
         // Validate input
@@ -148,17 +152,27 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
         // Update harga_satuan and tanggal_faktur
         try {
+            \Log::info('ProcessPrint - Finding BonMasuk', ['id' => $id]);
             $bonMasuk = BonMasuk::findOrFail($id);
+            \Log::info('ProcessPrint - BonMasuk found', ['bon_masuk_id' => $bonMasuk->id]);
             
             // Update harga_satuan for each detail
-            foreach ($request->harga_satuan as $detailId => $hargaSatuan) {
-                $cleanHarga = str_replace('.', '', $hargaSatuan);
-                $cleanHarga = str_replace(',', '.', $cleanHarga);
-                $numericHarga = is_numeric($cleanHarga) ? floatval($cleanHarga) : 0;
-                
-                BonMasukDetail::where('id', $detailId)
-                    ->where('bon_masuk_id', $bonMasuk->id)
-                    ->update(['harga_satuan' => $numericHarga]);
+            if ($request->has('harga_satuan') && is_array($request->harga_satuan)) {
+                \Log::info('ProcessPrint - Processing harga_satuan', ['count' => count($request->harga_satuan)]);
+                foreach ($request->harga_satuan as $detailId => $hargaSatuan) {
+                    \Log::info('ProcessPrint - Processing detail', ['detail_id' => $detailId, 'harga' => $hargaSatuan]);
+                    $cleanHarga = str_replace('.', '', $hargaSatuan);
+                    $cleanHarga = str_replace(',', '.', $cleanHarga);
+                    $numericHarga = is_numeric($cleanHarga) ? floatval($cleanHarga) : 0;
+                    
+                    $updated = BonMasukDetail::where('id', $detailId)
+                        ->where('bon_masuk_id', $bonMasuk->id)
+                        ->update(['harga_satuan' => $numericHarga]);
+                    
+                    \Log::info('ProcessPrint - Detail updated', ['detail_id' => $detailId, 'updated' => $updated]);
+                }
+            } else {
+                \Log::info('ProcessPrint - No harga_satuan data found');
             }
 
             // Update tanggal_faktur if provided

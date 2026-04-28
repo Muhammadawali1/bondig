@@ -172,21 +172,6 @@ function calculateTotal(input, jumlah) {
         totalCell.textContent = '-';
     }
 }
-
-// Add form submission handler to prevent issues
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form[method="POST"]');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Disable submit button to prevent double submission
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-            }
-        });
-    }
-});
 </script>
 <?php $__env->stopSection(); ?>
 
