@@ -91,7 +91,7 @@
                                         <th class="p-3 text-left">Stok Saat Ini</th>
                                         <th class="p-3 text-left">Jumlah Masuk</th>
                                         <th class="p-3 text-left">Stok Setelah</th>
-                                        <th class="p-3 text-left">Catatan</th>
+                                        <th class="p-3 text-left">Keterangan</th>
                                         <th class="p-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -128,7 +128,7 @@
                                             <input type="text" 
                                                    name="catatan[]" 
                                                    class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                   placeholder="Catatan...">
+                                                   placeholder="Keterangan...">
                                         </td>
                                         <td class="p-3">
                                             <button type="button" onclick="removeBarangRow(this)" class="text-red-600 hover:text-red-800">
@@ -199,7 +199,7 @@ function addBarangRow() {
             <input type="text" 
                    name="catatan[]" 
                    class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                   placeholder="Catatan...">
+                   placeholder="Keterangan...">
         </td>
         <td class="p-3">
             <button type="button" onclick="removeBarangRow(this)" class="text-red-600 hover:text-red-800">

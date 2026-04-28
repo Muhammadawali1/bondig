@@ -51,7 +51,7 @@
                         </div>
                         @if($bonBarang->keterangan)
                             <div class="md:col-span-3">
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keterangan</h3>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keperluan</h3>
                                 <p class="text-lg">{{ $bonBarang->keterangan }}</p>
                             </div>
                         @endif
@@ -93,7 +93,7 @@
                                         <th class="p-3 text-left">Jumlah Final</th>
                                         <th class="p-3 text-left">Status</th>
                                         <th class="p-3 text-left">Stok Setelah</th>
-                                        <th class="p-3 text-left">Catatan</th>
+                                        <th class="p-3 text-left">Keterangan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -144,10 +144,10 @@
                                             </td>
                                             <td class="p-3">
                                                 <input type="text" 
-                                                       name="catatan[]" 
+                                                       name="keterangan[]"
                                                        value="{{ $detail->catatan ?? '' }}"
                                                        class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                                       placeholder="Catatan...">
+                                                       placeholder="Keterangan...">
                                             </td>
                                         </tr>
                                     @endforeach

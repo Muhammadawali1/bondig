@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
                         <textarea name="catatan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
                     </div>
 

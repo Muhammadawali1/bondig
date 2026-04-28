@@ -53,7 +53,7 @@
                         </div>
                         @if($bonBarang->keterangan)
                             <div class="md:col-span-3">
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keterangan</h3>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keperluan</h3>
                                 <p class="text-lg">{{ $bonBarang->keterangan }}</p>
                             </div>
                         @endif
@@ -109,7 +109,7 @@
                                             <th class="p-3 text-left">Jumlah Diminta</th>
                                             <th class="p-3 text-left">Jumlah Disetujui</th>
                                             <th class="p-3 text-left">Status</th>
-                                            <th class="p-3 text-left">Catatan</th>
+                                            <th class="p-3 text-left">Keterangan</th>
                                             <th class="p-3 text-center">Aksi</th>
                                         </tr>
                                     </thead>
@@ -135,7 +135,7 @@
                                                     </select>
                                                 </td>
                                                 <td class="p-3">
-                                                    <input type="text" name="catatan[]" class="w-full px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Catatan..." value="{{ $detail->catatan ?? '' }}">
+                                                    <input type="text" name="catatan[]" class="w-full px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Keterangan..." value="{{ $detail->catatan ?? '' }}">
                                                 </td>
                                                 <td class="p-3 text-center">
                                                     <button type="button" onclick="confirmDelete({{ $detail->id }})" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition text-sm">
@@ -172,7 +172,7 @@
                                         <th class="p-3 text-left">Jumlah Diminta</th>
                                         <th class="p-3 text-left">Jumlah Disetujui</th>
                                         <th class="p-3 text-left">Status Detail</th>
-                                        <th class="p-3 text-left">Catatan</th>
+                                        <th class="p-3 text-left">Keterangan</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -96,7 +96,7 @@
                                     <th class="p-3 text-left">Stok Sebelum</th>
                                     <th class="p-3 text-left">Jumlah Masuk</th>
                                     <th class="p-3 text-left">Stok Sesudah</th>
-                                    <th class="p-3 text-left">Catatan</th>
+                                    <th class="p-3 text-left">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>

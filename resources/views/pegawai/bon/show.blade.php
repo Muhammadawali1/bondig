@@ -70,7 +70,7 @@
                         </div>
                         @if($bonBarang->keterangan)
                             <div>
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keterangan</h3>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Keperluan</h3>
                                 <p class="text-lg">{{ $bonBarang->keterangan }}</p>
                             </div>
                         @endif
@@ -97,7 +97,7 @@
                                     <th class="p-3 text-left">Jumlah Diminta</th>
                                     <th class="p-3 text-left">Jumlah Disetujui</th>
                                     <th class="p-3 text-left">Status Detail</th>
-                                    <th class="p-3 text-left">Catatan</th>
+                                    <th class="p-3 text-left">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>

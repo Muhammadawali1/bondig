@@ -98,7 +98,7 @@
 
                 @if($bonBarang->keterangan)
                     <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                        <p class="text-sm font-medium text-blue-800">Keterangan:</p>
+                        <p class="text-sm font-medium text-blue-800">Keperluan:</p>
                         <p class="text-blue-700 mt-1">{{ $bonBarang->keterangan }}</p>
                     </div>
                 @endif
@@ -118,7 +118,7 @@
                                 <th class="p-3 text-left">Jumlah Diminta</th>
                                 <th class="p-3 text-left">Jumlah Disetujui</th>
                                 <th class="p-3 text-left">Status Detail</th>
-                                <th class="p-3 text-left">Catatan</th>
+                                <th class="p-3 text-left">Keterangan</th>
                                
                             </tr>
                         </thead>
