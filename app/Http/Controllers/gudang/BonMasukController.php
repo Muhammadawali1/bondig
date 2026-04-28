@@ -122,12 +122,27 @@ class BonMasukController extends \App\Http\Controllers\Controller
 
     public function processPrint(Request $request, $id)
     {
-        // Validate input
-        $request->validate([
-            'harga_satuan' => 'required|array',
-            'harga_satuan.*' => 'nullable|numeric|min:0',
-            'tanggal_faktur' => 'nullable|integer|min:1|max:31',
+        \Log::info('ProcessPrint started', [
+            'id' => $id,
+            'request_data' => $request->all()
         ]);
+
+        // Validate input
+        try {
+            $request->validate([
+                'harga_satuan' => 'required|array',
+                'harga_satuan.*' => 'nullable|numeric|min:0',
+                'tanggal_faktur' => 'nullable|integer|min:1|max:31',
+            ]);
+            
+            \Log::info('ProcessPrint validation passed');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('ProcessPrint validation failed', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            throw $e;
+        }
 
         // Update harga_satuan and tanggal_faktur
         try {
@@ -183,6 +198,8 @@ class BonMasukController extends \App\Http\Controllers\Controller
             // Refresh the model to get updated data
             $bonMasuk->refresh();
             $bonMasuk->load(['details.barang', 'gudang']);
+
+            \Log::info('ProcessPrint completed successfully, returning view');
 
             return view('gudang.print.print-bon-masuk', compact('bonMasuk'));
         } catch (\Exception $e) {
