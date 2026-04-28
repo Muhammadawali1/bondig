@@ -173,56 +173,23 @@ function calculateTotal(input, jumlah) {
     }
 }
 
-// Aggressive debugging for form submission
+// Normal form submission handler
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== FORM DEBUG START ===');
     // Look for print form specifically - not logout form
     const form = document.querySelector('main form[method="POST"]') || 
                  document.querySelector('.container form[method="POST"]') ||
                  document.querySelector('form[action*="print"]');
-    console.log('Print form found:', form);
     
     if (form) {
-        // Log form details
-        console.log('Form action:', form.action);
-        console.log('Form method:', form.method);
-        console.log('Form inputs:', form.querySelectorAll('input, select').length);
-        
-        // Override submit completely for debugging
         form.addEventListener('submit', function(e) {
-            console.log('=== SUBMIT TRIGGERED ===');
-            alert('SUBMIT TRIGGERED! Check console.');
-            
-            e.preventDefault(); // Prevent default for debugging
-            console.log('Default prevented');
-            
-            // Collect form data
-            const formData = new FormData(form);
-            console.log('Form data:');
-            for (let [key, value] of formData.entries()) {
-                console.log(key + ':', value);
+            // Disable submit button to prevent double submission
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
             }
-            
-            // Manual submit after 2 seconds
-            setTimeout(() => {
-                console.log('=== MANUAL SUBMIT ===');
-                alert('Manual submit in 2 seconds...');
-                form.submit(); // Use native submit
-            }, 2000);
-            
-            return false;
         });
-        
-        // Also add click listener on button
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', function(e) {
-                console.log('=== BUTTON CLICKED ===');
-                alert('Button clicked!');
-            });
-        }
     }
-    console.log('=== FORM DEBUG END ===');
     
     // Add input formatting
     const hargaInputs = document.querySelectorAll('input[name^="harga_satuan"]');
