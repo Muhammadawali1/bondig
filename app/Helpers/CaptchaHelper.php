@@ -58,19 +58,11 @@ class CaptchaHelper
         // Convert input to string as well
         $value = (string) $value;
         
-        // Check if input contains invalid characters (only letters and numbers allowed)
-        if (!preg_match('/^[A-Za-z0-9]+$/', $value)) {
+        // Check exact match first
+        if ($captcha === $value) {
             return [
-                'valid' => false,
-                'error' => 'Karakter salah. Hanya huruf dan angka yang diperbolehkan.'
-            ];
-        }
-        
-        // Check if length matches
-        if (strlen($value) !== strlen($captcha)) {
-            return [
-                'valid' => false,
-                'error' => 'Panjang captcha tidak sesuai. Harus ' . strlen($captcha) . ' karakter.'
+                'valid' => true,
+                'error' => null
             ];
         }
         
@@ -79,14 +71,6 @@ class CaptchaHelper
             return [
                 'valid' => false,
                 'error' => 'Besar kecilnya huruf harus sama.'
-            ];
-        }
-        
-        // Check exact match
-        if ($captcha === $value) {
-            return [
-                'valid' => true,
-                'error' => null
             ];
         }
         
