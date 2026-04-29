@@ -33,6 +33,10 @@ class CaptchaHelper
         // Get the captcha from session
         $captcha = Session::get('captcha');
         
+        // Debug logging
+        \Log::info('Captcha Debug - Raw session: ' . json_encode($captcha));
+        \Log::info('Captcha Debug - Input: "' . $value . '"');
+        
         // Handle if captcha is an array (some captcha packages store as array)
         if (is_array($captcha)) {
             $captcha = isset($captcha['captcha']) ? $captcha['captcha'] : (string)current($captcha);
@@ -41,7 +45,10 @@ class CaptchaHelper
         // Convert to string to ensure type safety
         $captcha = (string) $captcha;
         
+        \Log::info('Captcha Debug - Processed captcha: "' . $captcha . '"');
+        
         if (!$captcha) {
+            \Log::info('Captcha Debug - No captcha found');
             return [
                 'valid' => false,
                 'error' => 'Session captcha tidak ditemukan. Silakan refresh halaman.'
@@ -49,6 +56,7 @@ class CaptchaHelper
         }
         
         if (!$value) {
+            \Log::info('Captcha Debug - No input value');
             return [
                 'valid' => false,
                 'error' => 'Captcha wajib diisi.'
@@ -60,6 +68,7 @@ class CaptchaHelper
         
         // Check exact match first
         if ($captcha === $value) {
+            \Log::info('Captcha Debug - Exact match - VALID');
             return [
                 'valid' => true,
                 'error' => null
@@ -68,6 +77,7 @@ class CaptchaHelper
         
         // Check case sensitivity (same characters but wrong case)
         if (strtolower($value) === strtolower($captcha) && $value !== $captcha) {
+            \Log::info('Captcha Debug - Case sensitivity error');
             return [
                 'valid' => false,
                 'error' => 'Besar kecilnya huruf harus sama.'
@@ -75,6 +85,7 @@ class CaptchaHelper
         }
         
         // General error for wrong captcha
+        \Log::info('Captcha Debug - General error - wrong captcha');
         return [
             'valid' => false,
             'error' => 'Captcha salah. Harus sesuai dengan gambar.'
