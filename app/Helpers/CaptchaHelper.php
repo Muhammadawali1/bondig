@@ -33,6 +33,14 @@ class CaptchaHelper
         // Get the captcha from session
         $captcha = Session::get('captcha');
         
+        // Handle if captcha is an array (some captcha packages store as array)
+        if (is_array($captcha)) {
+            $captcha = isset($captcha['captcha']) ? $captcha['captcha'] : (string)current($captcha);
+        }
+        
+        // Convert to string to ensure type safety
+        $captcha = (string) $captcha;
+        
         if (!$captcha) {
             return [
                 'valid' => false,
@@ -46,6 +54,9 @@ class CaptchaHelper
                 'error' => 'Captcha wajib diisi.'
             ];
         }
+        
+        // Convert input to string as well
+        $value = (string) $value;
         
         // Check if input contains invalid characters (only letters and numbers allowed)
         if (!preg_match('/^[A-Za-z0-9]+$/', $value)) {
