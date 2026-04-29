@@ -192,12 +192,8 @@
                 <div class="info-value">{{ $bonMasuk->tanggal_masuk ? $bonMasuk->tanggal_masuk->format('d F Y') : '-' }}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Tanggal Faktur</div>
+                <div class="info-label">Tanggal Input</div>
                 <div class="info-value">{{ $bonMasuk->tanggal_faktur ? $bonMasuk->tanggal_faktur->format('d F Y') : '-' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Petugas Gudang</div>
-                <div class="info-value">{{ $bonMasuk->gudang->name }}</div>
             </div>
         </div>
         
