@@ -67,11 +67,11 @@ class RegisterController extends Controller
             }
         }
 
-        // ✅ VALIDASI CAPTCHA (DITAMBAHKAN)
+        // ✅ VALIDASI CAPTCHA (MENGGUNAKAN BAWAAN LARAVEL)
         if (empty($request->captcha)) {
             $errors['captcha'] = 'Captcha wajib diisi.';
-        } elseif (!\App\Helpers\CaptchaHelper::check($request->captcha)) {
-            $errors['captcha'] = 'Captcha salah. Harus sesuai huruf besar/kecil.';
+        } elseif (!captcha_check($request->captcha)) {
+            $errors['captcha'] = 'Captcha salah. Harus sesuai dengan gambar.';
         }
         
         if (!empty($errors)) {
