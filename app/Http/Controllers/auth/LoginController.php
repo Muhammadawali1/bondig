@@ -46,14 +46,11 @@ class LoginController extends Controller
             $errors['password'] = 'Password wajib diisi.';
         }
 
-        // ✅ VALIDASI CAPTCHA (ENHANCED)
-        if (!empty($request->captcha)) {
-            $captchaValidation = \App\Helpers\CaptchaHelper::validate($request->captcha);
-            if (!$captchaValidation['valid']) {
-                $errors['captcha'] = $captchaValidation['error'];
-            }
-        } else {
+        // ✅ VALIDASI CAPTCHA (SIMPLE)
+        if (empty($request->captcha)) {
             $errors['captcha'] = 'Captcha wajib diisi.';
+        } elseif (!\App\Helpers\CaptchaHelper::check($request->captcha)) {
+            $errors['captcha'] = 'Captcha salah. Harus sesuai huruf besar/kecil.';
         }
         
         if (!empty($errors)) {
